@@ -9,7 +9,7 @@ BuildArchitectures:	noarch
 Summary:	Configuration of sshd
 
 %description
--
+Configures sshd server.
 
 @PREP@
 
