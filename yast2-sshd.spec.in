@@ -25,7 +25,8 @@ Summary:	Configuration of sshd
 @yncludedir@/sshd/*
 @clientdir@/sshd.ycp
 @clientdir@/sshd_auto.ycp
-@moduledir@/Sshd.*
+@moduledir@/*.ybc
+@moduledir@/*.ycp
 @desktopdir@/sshd.desktop
 @scrconfdir@/sshd.scr
 %doc @docdir@
