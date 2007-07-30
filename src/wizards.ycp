@@ -1,0 +1,112 @@
+/**
+ * File:	include/sshd/wizards.ycp
+ * Package:	Configuration of sshd
+ * Summary:	Wizards definitions
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ */
+
+{
+
+textdomain "sshd";
+
+import "Sequencer";
+import "Wizard";
+
+include "sshd/complex.ycp";
+include "sshd/dialogs.ycp";
+
+/**
+ * Main workflow of the sshd configuration
+ * @return sequence result
+ */
+any MainSequence() {
+
+    map aliases = $[
+	"server_configuration"	:   ``( ServerConfigurationDialog() ),
+	"login_settings"	:   ``( LoginSettingsDialog() ),
+	"proto_settings"	:	``( ProtoAndCipherDialog() ),	
+    ];
+
+    map sequence = $[
+	"ws_start" : "server_configuration",
+	"server_configuration" : $[
+	    `abort	: `abort,
+	    `next	: "login_settings",
+	],
+	"login_settings" : $[
+	    `abort	: `abort,
+		`next	: "proto_settings",
+	],
+	"proto_settings" : $[
+		`abort	: `abort,
+	    `next	: `next,
+	],
+    ];
+
+    any ret = Sequencer::Run(aliases, sequence);
+
+    return ret;
+}
+
+/**
+ * AutoYaST configuration of sshd
+ * @return sequence result
+ */
+any SshdAutoSequence() {
+    map aliases = $[
+	"main"	:   ``( MainSequence() ),
+    ];
+
+    map sequence = $[
+	"ws_start" : "main",
+	"main" : $[
+	    `abort	: `abort,
+	    `next	: `next
+	],
+    ];
+
+    Wizard::CreateDialog();
+
+    any ret = Sequencer::Run(aliases, sequence);
+
+    UI::CloseDialog();
+    return ret;
+}
+
+/**
+ * Whole configuration of sshd
+ * @return sequence result
+ */
+any SshdSequence() {
+
+    map aliases = $[
+	"read"	: [ ``( ReadDialog() ), true ],
+	"main"	:   ``( MainSequence() ),
+	"write"	: [ ``( WriteDialog() ), true ]
+    ];
+
+    map sequence = $[
+	"ws_start" : "read",
+	"read" : $[
+	    `abort	: `abort,
+	    `next	: "main"
+	],
+	"main" : $[
+	    `abort	: `abort,
+	    `next	: "write"
+	],
+	"write" : $[
+	    `abort	: `abort,
+	    `next	: `next
+	]
+    ];
+
+    Wizard::CreateDialog();
+
+    any ret = Sequencer::Run(aliases, sequence);
+
+    UI::CloseDialog();
+    return ret;
+}
+
+}

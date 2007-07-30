@@ -1,0 +1,287 @@
+/**
+ * Complex functions for dialogs handling
+ */
+
+{
+
+    textdomain "sshd";
+
+    import "Label";
+    import "Popup";
+    import "Wizard";
+    import "Wizard_hw";
+    import "Sshd";
+    import "Confirm";
+    import "Report";
+
+    include "sshd/helps.ycp";
+
+/**
+ * Read settings dialog
+ * @return `abort if aborted and `next otherwise
+ */
+symbol ReadDialog() {
+	Wizard::RestoreHelp(HELPS["read"]:"");
+	boolean ret = Sshd::Read();
+	return ret ? `next : `abort;
+}
+
+/**
+ * Write settings dialog
+ * @return `abort if aborted and `next otherwise
+ */
+symbol WriteDialog() {
+	Wizard::RestoreHelp(HELPS["write"]:"");
+	boolean ret = Sshd::Write();
+	return ret ? `next : `abort;
+}
+
+/**
+ * Initializes the table of ports
+ */
+
+void InitPortsTable () {
+    list <string> ports = Sshd::GetSSHDOption("Port");
+
+    if (ports != nil && ports != []) {
+	list <term> items = [];
+	foreach (string port, ports, {
+	    items = add (items, `item(`id(port), port));
+	});
+
+	// Redraw table of ports and enable modification buttons
+	UI::ChangeWidget(`id("Port"), `Items, items);
+	UI::ChangeWidget(`id("edit_port"), `Enabled, true);
+	UI::ChangeWidget(`id("delete_port"), `Enabled, true);
+    } else {
+	// Redraw table of ports and disable modification buttons
+	UI::ChangeWidget(`id("Port"), `Items, []);
+	UI::ChangeWidget(`id("edit_port"), `Enabled, false);
+	UI::ChangeWidget(`id("delete_port"), `Enabled, false);
+    }
+}
+
+/*
+ * Initializes Cipher Settings Table
+ */
+
+void InitCipherTable () {
+	list <string> wrk = Sshd::GetDefaultSSHDOption("Cipher");
+	list <string> defaults = splitstring(wrk[0]:"",",");
+	list <string> ciphers = [];
+	list <term> default_items = [];
+	list <term> items = [];
+
+	if (defaults != nil && defaults != []) {
+		foreach (string cipher, defaults,{
+			items = add (items, `item(`id(cipher), cipher));
+		});
+		//For combo box - list all supported c's
+		UI::ChangeWidget(`id("supported_ciphers"), `Items, default_items);
+
+
+		foreach (string cipher, ciphers,{
+			items = add (items, `item(`id(cipher), cipher));
+		});
+
+		UI::ChangeWidget(`id("Ciphers"),`Items, items);
+		UI::ChangeWidget(`id("add_cipher"), `Enabled, true);
+		UI::ChangeWidget(`id("remove_cipher"), `Enabled, true);
+	}
+	else {
+		UI::ChangeWidget(`id("Ciphers"),`Items,defaults);
+		UI::ChangeWidget(`id("Ciphers"),`Items, []);
+		UI::ChangeWidget(`id("remove_cipher"), `Enabled, false);
+	}
+}
+
+/*
+ * Initializes Protocol Settings Dialog
+ */
+
+void InitProtocolVersion () {
+	list <string> protocols = Sshd::GetSSHDOption("Protocol");
+
+	if (protocols != nil && protocols != []) {
+		switch(protocols[0]:""){
+			case ("2,1"):
+			case ("1,2"):  UI::ChangeWidget(`id("SSHv21"),`Value,true);
+						break; 
+			case ("2"): UI::ChangeWidget(`id("SSHv2"),`Value,true);
+					  break;
+			case ("1"): UI::ChangeWidget(`id("SSHv1"),`Value,true);
+					  break;
+		}
+	}
+}
+
+void InitServerConfigurationDialog() {
+    InitPortsTable();
+
+    foreach (string key, ["AllowTcpForwarding", "X11Forwarding", "Compression"], {
+	UI::ChangeWidget(`id(key), `Value, (Sshd::GetSSHDOption(key) == ["yes"]));
+    });
+}
+
+/*
+ * Initializes the Login Settings Dialog
+ */
+
+void InitLoginSettingsDialog() {
+    UI::ChangeWidget( `id("MaxAuthTries"), `ValidChars, "0123456789");
+    list <string> MaxAuthTries = Sshd::GetSSHDOption("MaxAuthTries");
+    UI::ChangeWidget(`id("MaxAuthTries"), `Value, MaxAuthTries[0]:"0");
+
+    foreach (string key, ["PrintMotd", "PermitRootLogin",
+	"PasswordAuthentication", "RSAAuthentication", "PubkeyAuthentication"], {
+	    UI::ChangeWidget(`id(key), `Value, (Sshd::GetSSHDOption(key) == ["yes"]));
+    });
+}
+
+/**
+ * Removes the port from list of current ports
+ *
+ * @param string port_number
+ */
+void DeletePort (string port) {
+    Sshd::SetSSHDOption("Port", filter (
+	string single_port, Sshd::GetSSHDOption("Port"), ``(single_port != port)
+    ));
+}
+
+/**
+ * Function handles the adding or editing port number.
+ * When the current_port is not 'nil', the dialog will
+ * allow to edit it.
+ *
+ * @param string current_port a port number to be edited or 'nil' when adding a new one
+ */
+void AddEditPortDialog (string current_port) {
+    UI::OpenDialog(`opt(`decorated), `VBox(
+	`MinWidth (30,
+	    `HBox(
+		`HSpacing(1),
+		`Frame(
+		    (current_port == nil ?
+		    /* A popup dialog caption */
+		    _("Add New Port")
+		    :
+		    /* A popup dialog caption */
+		    _("Edit Current Port")),
+		    /* A text entry */
+		    `TextEntry(`id("port_number"), _("&Port"), (current_port == nil ? "":current_port))
+		),
+		`HSpacing(1)
+	    )
+	),
+	`VSpacing(1),
+	`HBox(
+	    `PushButton(`id(`ok), Label::OKButton()),
+	    `HSpacing(1),
+	    `PushButton(`id(`cancel), Label::CancelButton())
+	)
+    ));
+
+    UI::ChangeWidget( `id("port_number"), `ValidChars, "0123456789");
+
+    any ret = nil;
+    while (true) {
+	ret = UI::UserInput();
+	if (ret == `ok) {
+	    string new_port = (string) UI::QueryWidget(`id("port_number"), `Value);
+
+	    if (new_port == "") {
+		UI::SetFocus(`id("port_number"));
+		Report::Error(_("Port number must not be empty."));
+		continue;
+	    }
+
+	    Sshd::SetSSHDOption("Port", add (Sshd::GetSSHDOption("Port"), new_port));
+
+	    if (current_port != nil) DeletePort(current_port);
+	}
+
+	break;
+    }
+
+    UI::CloseDialog();
+}
+
+/**
+ * Function handles Add, Edit and Delete buttons
+ *
+ * @param any action from "add_port", "edit_port" or "delete_port"
+ */
+void HandleServerConfigurationDialog(any action) {
+    string selected_port = (string) UI::QueryWidget(`id("Port"), `CurrentItem);
+
+    // Adding a new port
+    if (action == "add_port") {
+	AddEditPortDialog(nil);
+    // Editing current port
+    } else if (action == "edit_port") {
+	AddEditPortDialog(selected_port);
+    // Deleting current port
+    } else if (action == "delete_port") {
+	if (Confirm::DeleteSelected()) DeletePort(selected_port);
+    } else {
+	y2error("Unknown action %1", action);
+    }
+
+    InitPortsTable();
+}
+
+/**
+ * Stores the current configuration from Server Configuration Dialog
+ */
+void StoreServerConfigurationDialog() {
+    Sshd::SetModified();
+
+    // Stores all boolean values and turns them to the "yes"/"no" notation
+    foreach (string key, ["AllowTcpForwarding", "X11Forwarding", "Compression"], {
+    Sshd::SetSSHDOption(
+    key,
+    [ (((boolean) UI::QueryWidget(`id(key), `Value) == true) ? "yes":"no") ]
+    );
+    });
+    }
+
+void StoreProtocolConfigurationDialog() {
+	Sshd::SetModified();
+
+	string current = (string) UI::QueryWidget(`id(`rb), `CurrentButton);
+
+	switch (current){
+		case("SSHv21"): Sshd::SetSSHDOption("Protocol", [ "2,1" ]);
+					break;
+		case("SSHv2"): Sshd::SetSSHDOption("Protocol", [ "2" ]);
+					break;
+		case("SSHv1"): Sshd::SetSSHDOption("Protocol", [ "1" ]);
+					break;
+
+	}
+}
+
+/**
+ * Stores the current configuration from Login Settings  Dialog
+ */
+void StoreLoginSettingsDialog() {
+    Sshd::SetModified();
+
+    // Stores an integer value as a string
+    Sshd::SetSSHDOption(
+	"MaxAuthTries",
+	[ (string) UI::QueryWidget(`id("MaxAuthTries"), `Value) ]
+    );
+
+    // Stores all boolean values and turns them to the "yes"/"no" notation
+    foreach (string key, ["PrintMotd", "PermitRootLogin",
+	"PasswordAuthentication", "RSAAuthentication", "PubkeyAuthentication"], {
+	    Sshd::SetSSHDOption(
+		key,
+		[ (((boolean) UI::QueryWidget(`id(key), `Value) == true) ? "yes":"no") ]
+	    );
+    });
+}
+
+}

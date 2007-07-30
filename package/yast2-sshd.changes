@@ -1,0 +1,20 @@
+-------------------------------------------------------------------
+Mon Jul 30 14:06:39 CEST 2007 - locilka@suse.cz
+
+- Module moved to the public SVN at opensuse.org.
+- Module officially included in openSUSE 10.3 (FATE #120098).
+- 2.15.0
+
+-------------------------------------------------------------------
+Fri Aug  8 22:12:21 CEST 2006 - locilka@suse.cz
+
+- Added example of Command Line.
+- Added example of AutoYaST support.
+- Added example of testsuite.
+- 0.0.2
+
+-------------------------------------------------------------------
+Tue May 23 12:45:39 2006 - locilka@suse.cz
+
+- Initial version.
+- 0.0.1

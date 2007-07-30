@@ -1,0 +1,58 @@
+/**
+ * File:	modules/SshdCommandLine.ycp
+ * Package:	Configuration of SSHD
+ * Summary:	SSHD CommandLine functions
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * CommandLine functions for SSHD Configuration
+ */
+
+{
+    module "SshdCommandLine";
+    textdomain "sshd";
+    
+    import "Sshd";
+    import "String";
+    import "CommandLine";
+
+    global boolean CMDLinePorts (map options) {
+	y2milestone("%1", options);
+	list <string> ports = Sshd::GetSSHDOption("Port");
+
+	if (options["show"]:nil!=nil) {
+	    CommandLine::Print(String::UnderlinedHeader(_("SSHD Server Ports:"),0));
+	    CommandLine::Print("");
+	    
+	    CommandLine::Print(String::TextTable(
+		[_("Port")],
+		maplist (string port, ports, { return [port]; }),
+		$[]
+	    ));
+	    return false;
+
+	} else if (options["add"]:nil!=nil) {
+	    integer port_nr = tointeger(options["add"]:"");
+	    if (port_nr == nil) {
+		CommandLine::Print(sformat("Invalid port number definition '%1'",
+		    options["add"]:""));
+		return false;
+	    }
+	    
+	    ports = toset(add (ports, options["add"]:""));
+	    return Sshd::SetSSHDOption("Port", ports);
+
+	} else if (options["remove"]:nil!=nil) {
+	    integer port_nr = tointeger(options["remove"]:"");
+	    if (port_nr == nil) {
+		CommandLine::Print(sformat("Invalid port number definition '%1'",
+		    options["remove"]:""));
+		return false;
+	    }
+	    
+	    ports = filter (string one_port, ports,
+		{ return one_port != options["remove"]:""; });
+	    return Sshd::SetSSHDOption("Port", ports);
+	}
+    }
+    
+}

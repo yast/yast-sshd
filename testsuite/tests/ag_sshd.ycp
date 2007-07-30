@@ -1,0 +1,32 @@
+{
+    map READ    = $[
+	"sshd" : $[
+	    "AcceptEnv":[
+		"LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES ",
+		"LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT ",
+		"LC_IDENTIFICATION LC_ALL"
+	    ],
+	    "PasswordAuthentication":["no"],
+	    "Port":["22"],
+	    "Protocol":["2,1"],
+	    "Subsystem":["sftp\t/usr/lib64/ssh/sftp-server"],
+	    "UsePAM":["yes"],
+	    "X11Forwarding":["yes"]
+	]
+    ];
+    map WRITE   = $[];
+    map EXECUTE = $[];
+    
+    include "testsuite.ycp";
+
+    // TESTSUITE_INIT([READ, WRITE, EXECUTE], nil);
+    
+    DUMP("------ Dir -----");
+    TEST (``(SCR::Dir(.sshd)), [READ, WRITE, EXECUTE], nil);
+    DUMP("");
+
+    DUMP("------ Read -----");
+    foreach (string param, (list <string>) SCR::Dir(.sshd), {
+	TEST (``(SCR::Read(add(.sshd, param))), [READ, WRITE, EXECUTE], nil);
+    });
+}

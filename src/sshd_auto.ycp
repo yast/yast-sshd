@@ -1,0 +1,85 @@
+/**
+ * File:	clients/sshd_auto.ycp
+ * Package:	Configuration of sshd
+ * Summary:	Main file for SSHD in AutoYaST
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * AutoYaST client for SSHD Configuration
+ */
+
+{
+
+/***
+ * <h3>Configuration of sshd</h3>
+ */
+
+textdomain "sshd";
+
+/* The main () */
+y2milestone ("----------------------------------------");
+y2milestone ("sshd_auto module started");
+
+include "sshd/wizards.ycp";
+
+any ret = nil;
+string func = "";
+map param = $[];
+
+// Checking parameters
+if (size (WFM::Args()) > 0 && is (WFM::Args(0), string)) {
+    func = (string) WFM::Args(0);
+    if (size (WFM::Args()) > 1 && is (WFM::Args(1), map))
+	param = (map) WFM::Args(1);
+}
+y2milestone("Running: %1", func);
+
+// All needed functions
+switch (func) {
+
+    // define summary here, e.g., ret = "summary"
+    case "Summary" :
+	ret = Sshd::Summary();
+	break;
+
+    // reset the current configuration to the default one
+    case "Reset" : break;
+
+    // define map of lists of packages
+    case "Packages" : break;
+
+    // call the AutoYaST sequence here
+    case "Change" :
+	ret = SshdAutoSequence();
+	y2milestone("ret: %1", ret);
+	if (ret == `next) Sshd::SetModified();
+	break;
+
+    // import the configuration here
+    case "Import" : break;
+
+    // read the current configuration from system
+    case "Read" : break;
+
+    // export the current configuration from memory
+    case "Export" : break;
+
+    // return the modified flag
+    case "GetModified" : break;
+
+    // set the modified flag
+    case "SetModified" : break;
+
+    // write the confuguration to the system
+    case "Write" : break;
+    
+    y2error("Unknown function: %1, Params %2", func, param);
+}
+
+/* Finish */
+y2debug("ret=%1", ret);
+y2milestone("sshd_auto module finished");
+y2milestone("----------------------------------------");
+
+return ret;
+
+}

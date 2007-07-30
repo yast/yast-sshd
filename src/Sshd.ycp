@@ -1,0 +1,308 @@
+/**
+ * File:	modules/Sshd.ycp
+ * Package:	Configuration of SSHD
+ * Summary:	SSHD settings, input and output functions
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * Representation of the configuration of SSHD.
+ * Input and output routines.
+ */
+
+{
+
+module "Sshd";
+textdomain "sshd";
+
+import "Progress";
+import "Report";
+import "Message";
+import "Service";
+import "Popup";
+import "SCR";
+import "Mode";
+
+/**
+ * Data was modified?
+ */
+boolean modified = false;
+
+/**
+ * Sleep time between Read or Write steps
+ */
+integer sl = 1000;
+
+/**
+ * Returns whether the configuration has been modified.
+ */
+global boolean GetModified() {
+    return modified;
+}
+
+/**
+ * Sets that the configuration has been modified.
+ */
+global void SetModified() {
+    modified = true;
+}
+
+/**
+* map of SSHD settings
+*/
+     map <string, list<string> > SETTINGS = $[];
+
+     map <string, list<string> > DEFAULT_CONFIG = $[
+     "Port"                      : ["22"],
+     "AllowTcpForwarding"        : ["yes"],
+     "X11Forwarding"             : ["no"],
+     "Compression"               : ["yes"],
+     "PrintMotd"                 : ["yes"],
+     "PermitRootLogin"           : ["yes"],
+     "IgnoreUserKnownHosts"      : ["no"],
+     "MaxAuthTries"              : ["6"],
+     "PasswordAuthentication"    : ["yes"],
+     "RSAAuthentication"         : ["no"],
+     "PubkeyAuthentication"      : ["yes"],
+	"Cipher"				   : ["aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,arcfour128,arcfour256,arcfour,aes192-cbc,aes256-cbc,aes128-ctr,aes192-ctr,aes256-ctr"],
+     ];
+
+/**
+ * Reads current sshd configuration
+ */
+boolean ReadSSHDSettings () {
+    foreach (string key, (list <string>) SCR::Dir(.sshd), {
+	list <string> val = (list <string>) SCR::Read(add(.sshd, key));
+        if (val != nil) SETTINGS[key] = val;
+    });
+
+    y2milestone("SSHD configuration has been read: %1", SETTINGS);
+    return true;
+}
+
+/**
+ * Writes current sshd configuration
+ */
+boolean WriteSSHDSettings () {
+    y2milestone("Writing SSHD configuration: %1", SETTINGS);
+
+    foreach (string option_key, list <string> option_val, SETTINGS, {
+	SCR::Write(add(.sshd, option_key), option_val);
+    });
+    // This is very important
+    // it flushes the cache, and stores the configuration on the disk
+    SCR::Write(.sshd, nil);
+
+    return true;
+}
+
+/**
+ * Returns the SSHD Option as a list of strings.
+ *
+ * @param string option_key of the SSHD configuration
+ * @return list <string> with option_values
+ */
+global list <string> GetSSHDOption (string option_key) {
+    return SETTINGS[option_key]:DEFAULT_CONFIG[option_key]:[];
+}
+
+/**
+ * Returns default SSHD Option as a list of strings.
+ *
+ * @param string option_key of the SSHD configuration
+ * @return list <string> with option_values
+ */
+
+global list <string> GetDefaultSSHDOption (string option_key) {
+	return DEFAULT_CONFIG[option_key]:[];
+}
+
+/**
+ * Sets values for an option.
+ *
+ * @param string option_key with the SSHD configuration key
+ * @param list <string> option_values with the SSHD configuration values
+ */
+global void SetSSHDOption (string option_key, list <string> option_vals) {
+    SETTINGS[option_key] = option_vals;
+}
+
+/**
+ * Describes whether the daemon is running
+ */
+boolean sshd_is_running = false;
+
+/**
+ * Reads current sshd status
+ */
+boolean ReadSSHDService () {
+    if (Service::Status("sshd") == 0) {
+	sshd_is_running = true;
+    } else {
+	sshd_is_running = false;
+    }
+
+    y2milestone((sshd_is_running ? "SSH is running":"SSH is not running"));
+
+    return true;
+}
+
+/**
+ * Restarts the sshd when the daemon was running when starting the configuration
+ */
+boolean WriteSSHDService () {
+    boolean all_ok = true;
+
+    if (sshd_is_running) {
+	y2milestone("Restarting sshd daemon");
+	all_ok = Service::Restart("sshd");
+    } else {
+	y2milestone("Sshd is not running - leaving...");
+    }
+
+    return all_ok;
+}
+
+/**
+  Returns a confirmation popup dialog whether user wants to really abort.
+ */
+global boolean Abort() {
+    return Popup::ReallyAbort(GetModified());
+}
+
+/**
+ * Checks whether an Abort button has been pressed.
+ * If so, calls function to confirm the abort call.
+ *
+ * @return boolean true if abort confirmed
+ */
+global boolean PollAbort() {
+    // Do not check UI when running in CommandLine mode
+    if (Mode::commandline())
+	return false;
+
+    if (UI::PollInput() == `abort)
+	return Abort();
+
+    return false;
+}
+
+/**
+ * Read all SSHD settings
+ * @return true on success
+ */
+global boolean Read() {
+
+    /* SSHD read dialog caption */
+    string caption = _("Initializing SSHD Configuration");
+
+    integer steps = 2;
+
+    Progress::New( caption, " ", steps, [
+	    /* Progress stage 1/2 */
+	    _("Read current SSHD configuration"),
+	    /* Progress stage 2/2 */
+	    _("Read current SSHD state")
+	], [
+	    /* Progress step 1/2 */
+	    _("Reading current SSHD configuration..."),
+	    /* Progress step 2/2 */
+	    _("Reading current SSHD state..."),
+	    /* Progress finished */
+	    Message::Finished()
+	],
+	""
+    );
+
+    sleep(sl);
+
+    if (PollAbort()) return false;
+    Progress::NextStage();
+    /* Error message */
+    if(!ReadSSHDSettings()) Report::Error(Message::CannotReadCurrentSettings());
+    sleep(sl);
+
+    if (PollAbort()) return false;
+    Progress::NextStep();
+    /* Error message */
+    if(!ReadSSHDService()) Report::Error(_("Cannot read current SSHD state."));
+    sleep(sl);
+
+    if (PollAbort()) return false;
+    Progress::NextStage ();
+    sleep(sl);
+
+    modified = false;
+    return true;
+}
+
+/**
+ * Write all SSHD settings
+ * @return true on success
+ */
+global boolean Write() {
+
+    /* SSHD read dialog caption */
+    string caption = _("Saving SSHD Configuration");
+
+    integer steps = 2;
+    
+    Progress::New(caption, " ", steps, [
+	    /* Progress stage 1/2 */
+	    _("Write the SSHD settings"),
+	    /* Progress stage 2/2 */
+	    _("Adjust the SSHD service")
+	], [
+	    /* Progress step 1/2 */
+	    _("Writing the SSHD settings..."),
+	    /* Progress step 2/2 */
+	    _("Adjusting the SSHD service..."),
+	    Message::Finished()
+	],
+	""
+    );
+
+    sleep(sl);
+
+    if(PollAbort()) return false;
+    Progress::NextStage();
+    /* Error message */
+    if(!WriteSSHDSettings()) Report::Error (_("Cannot write SSHD settings."));
+    sleep(sl);
+
+    if(PollAbort()) return false;
+    Progress::NextStage ();
+    /* Error message */
+    if(!WriteSSHDService()) Report::Error (Message::CannotAdjustService("sshd"));
+    sleep(sl);
+
+    Progress::NextStage ();
+    sleep(sl);
+
+    return true;
+}
+
+/* AutoYaST-related functions */
+
+global string Summary () {
+    string ret = "";
+    
+    // TRANSLATORS: summary item
+    if (! Sshd::GetModified()) {
+	// TRANSLATORS: summary item
+	return _("Not configured yet.");
+    }
+
+    list <string> ports = Sshd::GetSSHDOption("Port");
+    if (size(ports) == 1) {
+	// TRANSLATORS: summary item
+	ret = ret + sformat(_("SSHD Server will use port: %1"), ports[0]:"");
+    } else if (size(ports) > 0) {
+	// TRANSLATORS: summary item
+	ret = ret + sformat(_("SSHD Server will use ports: %1"), mergestring(ports, ", "));
+    }
+
+    return ret;
+}
+
+/* AutoYaST-related functions */
+
+}

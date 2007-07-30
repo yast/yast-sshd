@@ -1,0 +1,20 @@
+Dump	------ Dir -----
+Dir	.sshd: ["AcceptEnv", "PasswordAuthentication", "Port", "Protocol", "Subsystem", "UsePAM", "X11Forwarding"]
+Return	["AcceptEnv", "PasswordAuthentication", "Port", "Protocol", "Subsystem", "UsePAM", "X11Forwarding"]
+Dump	
+Dump	------ Read -----
+Dir	.sshd: ["AcceptEnv", "PasswordAuthentication", "Port", "Protocol", "Subsystem", "UsePAM", "X11Forwarding"]
+Read	.sshd."AcceptEnv" ["LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES ", "LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT ", "LC_IDENTIFICATION LC_ALL"]
+Return	["LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES ", "LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT ", "LC_IDENTIFICATION LC_ALL"]
+Read	.sshd."PasswordAuthentication" ["no"]
+Return	["no"]
+Read	.sshd."Port" ["22"]
+Return	["22"]
+Read	.sshd."Protocol" ["2,1"]
+Return	["2,1"]
+Read	.sshd."Subsystem" ["sftp\t/usr/lib64/ssh/sftp-server"]
+Return	["sftp\t/usr/lib64/ssh/sftp-server"]
+Read	.sshd."UsePAM" ["yes"]
+Return	["yes"]
+Read	.sshd."X11Forwarding" ["yes"]
+Return	["yes"]

@@ -1,0 +1,6 @@
+Dump	Sshd::GetSSHDOption("Port")
+Return	["22"]
+Dump	Sshd::SetSSHDOption("Port", ["22","44","66"])
+Return	nil
+Dump	Sshd::GetSSHDOption("Port")
+Return	["22", "44", "66"]

@@ -1,0 +1,39 @@
+/**
+ * File:	include/sshd/helps.ycp
+ * Package:	Configuration of sshd
+ * Summary:	Help texts of all the dialogs
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ */
+
+{
+
+textdomain "sshd";
+
+/**
+ * All helps are here
+ */
+map HELPS = $[
+
+    /* Read dialog help */
+    "read" : _("<p><b><big>Initializing sshd Configuration</big></b><br>
+Please wait...<br></p>"),
+
+    /* Write dialog help */
+    "write" : _("<p><b><big>Saving sshd Configuration</big></b><br>
+Please wait...<br></p>"),
+
+    /* Server Configuration dialog help */
+    "server_configuration" : _("<p><b><big>Server Configuration</big></b><br>
+Configure SSHD here.<br></p>"),
+
+    /* Login Settings dialog help */
+    "login_settings" : _("<p><b><big>Login Settings</big></b><br>
+Configure SSHD login settings here.<br></p>"),
+
+	/* Protocol and Cipher Settings dialog help*/
+	"proto_settings" : _("<p><b><big>Protocol and Cipher Settings</big></b><br>
+Configure SSHD protocol version and cipher settings here.<br></p>"),
+
+];
+
+}

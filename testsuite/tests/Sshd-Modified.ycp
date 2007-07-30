@@ -1,0 +1,17 @@
+{
+    // testedfiles: Sshd.ycp
+    
+    include "testsuite.ycp";
+    TESTSUITE_INIT([], nil);
+    
+    import "Sshd";
+    
+    DUMP("Sshd::GetModified");
+    TEST(``(Sshd::GetModified()), [], nil);
+
+    DUMP("Sshd::SetModified");
+    TEST(``(Sshd::SetModified()), [], nil);
+
+    DUMP("Sshd::GetModified");
+    TEST(``(Sshd::GetModified()), [], nil);
+}
