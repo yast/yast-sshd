@@ -22,8 +22,8 @@ include "sshd/dialogs.ycp";
 any MainSequence() {
 
     map aliases = $[
-	"server_configuration"	:   ``( ServerConfigurationDialog() ),
-	"login_settings"	:   ``( LoginSettingsDialog() ),
+	"server_configuration"	:	``( ServerConfigurationDialog() ),
+	"login_settings"	:	``( LoginSettingsDialog() ),
 	"proto_settings"	:	``( ProtoAndCipherDialog() ),	
     ];
 
@@ -102,6 +102,7 @@ any SshdSequence() {
     ];
 
     Wizard::CreateDialog();
+    Wizard::SetTitleIcon("yast-sshd");
 
     any ret = Sequencer::Run(aliases, sequence);
 

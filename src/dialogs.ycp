@@ -64,6 +64,7 @@ any ServerConfigurationDialog() {
     Wizard::SetContentsButtons(caption, contents, HELPS["server_configuration"]:"",
 	    Label::BackButton(), Label::NextButton());
     Wizard::DisableBackButton();
+    Wizard::SetTitleIcon("yast-sshd");
 
 	InitServerConfigurationDialog();
 
@@ -133,6 +134,7 @@ any LoginSettingsDialog() {
 
     Wizard::SetContentsButtons(caption, contents, HELPS["login_settings"]:"",
 	    Label::BackButton(), Label::NextButton());
+    Wizard::SetTitleIcon("yast-sshd");
 
 	InitLoginSettingsDialog();
 
@@ -205,6 +207,7 @@ any ProtoAndCipherDialog() {
     Wizard::SetContentsButtons(caption, contents, HELPS["proto_settings"]:"",
 	    Label::BackButton(), Label::NextButton());
     Wizard::SetNextButton(`next, Label::AcceptButton());
+    Wizard::SetTitleIcon("yast-sshd");
 
 	InitProtocolVersion();
 	InitCipherTable();

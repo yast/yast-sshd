@@ -18,7 +18,7 @@ X-SuSE-YaST-AutoInstResource=sshd
 X-SuSE-YaST-AutoInstClonable=true
 X-SuSE-YaST-AutoInstRequires=lan
 
-Icon=yast-nfs
+Icon=yast-sshd
 Exec=/sbin/yast2 sshd 
 
 Name=SSHD Configuration

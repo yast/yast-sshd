@@ -22,6 +22,7 @@
  */
 symbol ReadDialog() {
 	Wizard::RestoreHelp(HELPS["read"]:"");
+	Wizard::SetTitleIcon("yast-sshd");
 	boolean ret = Sshd::Read();
 	return ret ? `next : `abort;
 }
@@ -32,6 +33,7 @@ symbol ReadDialog() {
  */
 symbol WriteDialog() {
 	Wizard::RestoreHelp(HELPS["write"]:"");
+	Wizard::SetTitleIcon("yast-sshd");
 	boolean ret = Sshd::Write();
 	return ret ? `next : `abort;
 }
