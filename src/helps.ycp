@@ -15,11 +15,11 @@ textdomain "sshd";
 map HELPS = $[
 
     /* Read dialog help */
-    "read" : _("<p><b><big>Initializing sshd Configuration</big></b><br>
+    "read" : _("<p><b><big>Initializing the sshd Configuration</big></b><br>
 Please wait...<br></p>"),
 
     /* Write dialog help */
-    "write" : _("<p><b><big>Saving sshd Configuration</big></b><br>
+    "write" : _("<p><b><big>Saving the sshd Configuration</big></b><br>
 Please wait...<br></p>"),
 
     /* Server Configuration dialog help */

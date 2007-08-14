@@ -122,7 +122,7 @@ any LoginSettingsDialog() {
 		/* A text entry */
 		`Left(`TextEntry(`id("MaxAuthTries"),           _("Ma&ximum Authentication Tries"))),
 		/* A check box */
-		`Left(`CheckBox (`id("PasswordAuthentication"), _("Pa&sswordAuthentication"))),
+		`Left(`CheckBox (`id("PasswordAuthentication"), _("Pa&ssword Authentication"))),
 		/* A check box */
 		`Left(`CheckBox (`id("RSAAuthentication"),      _("RSA Authenti&cation"))),
 		/* A check box */

@@ -192,20 +192,20 @@ global boolean PollAbort() {
 global boolean Read() {
 
     /* SSHD read dialog caption */
-    string caption = _("Initializing SSHD Configuration");
+    string caption = _("Initializing the SSHD Configuration");
 
     integer steps = 2;
 
     Progress::New( caption, " ", steps, [
 	    /* Progress stage 1/2 */
-	    _("Read current SSHD configuration"),
+	    _("Read the current SSHD configuration"),
 	    /* Progress stage 2/2 */
-	    _("Read current SSHD state")
+	    _("Read the current SSHD state")
 	], [
 	    /* Progress step 1/2 */
-	    _("Reading current SSHD configuration..."),
+	    _("Reading the current SSHD configuration..."),
 	    /* Progress step 2/2 */
-	    _("Reading current SSHD state..."),
+	    _("Reading the current SSHD state..."),
 	    /* Progress finished */
 	    Message::Finished()
 	],
@@ -223,7 +223,7 @@ global boolean Read() {
     if (PollAbort()) return false;
     Progress::NextStep();
     /* Error message */
-    if(!ReadSSHDService()) Report::Error(_("Cannot read current SSHD state."));
+    if(!ReadSSHDService()) Report::Error(_("Cannot read the current SSHD state."));
     sleep(sl);
 
     if (PollAbort()) return false;
@@ -241,7 +241,7 @@ global boolean Read() {
 global boolean Write() {
 
     /* SSHD read dialog caption */
-    string caption = _("Saving SSHD Configuration");
+    string caption = _("Saving the SSHD Configuration");
 
     integer steps = 2;
     
@@ -265,7 +265,7 @@ global boolean Write() {
     if(PollAbort()) return false;
     Progress::NextStage();
     /* Error message */
-    if(!WriteSSHDSettings()) Report::Error (_("Cannot write SSHD settings."));
+    if(!WriteSSHDSettings()) Report::Error (_("Cannot write the SSHD settings."));
     sleep(sl);
 
     if(PollAbort()) return false;
