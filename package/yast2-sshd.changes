@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Nov 16 20:45:38 CET 2007 - locilka@suse.cz
+
+- Changing module layout to use CWM Tabs instead of Wizard Workflow
+  (#333655)
+- 2.16.0
+
+-------------------------------------------------------------------
 Tue Aug 14 16:50:48 CEST 2007 - jsuchome@suse.cz
 
 - Merged proofread texts

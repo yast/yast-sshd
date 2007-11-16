@@ -16,6 +16,12 @@
 
     include "sshd/helps.ycp";
 
+boolean ReallyExit () {
+    // yes-no popup
+    return Popup::YesNo (_("Really exit?
+All changes will be lost."));
+}
+
 /**
  * Read settings dialog
  * @return `abort if aborted and `next otherwise
@@ -117,7 +123,7 @@ void InitProtocolVersion () {
 	}
 }
 
-void InitServerConfigurationDialog() {
+void InitServerConfigurationDialog (string id) {
     InitPortsTable();
 
     foreach (string key, ["AllowTcpForwarding", "X11Forwarding", "Compression"], {
@@ -129,7 +135,7 @@ void InitServerConfigurationDialog() {
  * Initializes the Login Settings Dialog
  */
 
-void InitLoginSettingsDialog() {
+void InitLoginSettingsDialog (string id) {
     UI::ChangeWidget( `id("MaxAuthTries"), `ValidChars, "0123456789");
     list <string> MaxAuthTries = Sshd::GetSSHDOption("MaxAuthTries");
     UI::ChangeWidget(`id("MaxAuthTries"), `Value, MaxAuthTries[0]:"0");
@@ -214,8 +220,10 @@ void AddEditPortDialog (string current_port) {
  *
  * @param any action from "add_port", "edit_port" or "delete_port"
  */
-void HandleServerConfigurationDialog(any action) {
-    string selected_port = (string) UI::QueryWidget(`id("Port"), `CurrentItem);
+symbol HandleServerConfigurationDialog (string id, map event) {
+    any action = event["ID"]:nil;
+
+    string selected_port = (string) UI::QueryWidget (`id("Port"), `CurrentItem);
 
     // Adding a new port
     if (action == "add_port") {
@@ -225,18 +233,20 @@ void HandleServerConfigurationDialog(any action) {
 	AddEditPortDialog(selected_port);
     // Deleting current port
     } else if (action == "delete_port") {
-	if (Confirm::DeleteSelected()) DeletePort(selected_port);
-    } else {
-	y2error("Unknown action %1", action);
+	if (Confirm::DeleteSelected()) DeletePort (selected_port);
     }
 
     InitPortsTable();
+
+    return nil;
 }
+
+
 
 /**
  * Stores the current configuration from Server Configuration Dialog
  */
-void StoreServerConfigurationDialog() {
+void StoreServerConfigurationDialog (string id, map event) {
     Sshd::SetModified();
 
     // Stores all boolean values and turns them to the "yes"/"no" notation
@@ -248,7 +258,7 @@ void StoreServerConfigurationDialog() {
     });
     }
 
-void StoreProtocolConfigurationDialog() {
+void StoreProtocolConfigurationDialog (string id, map event) {
 	Sshd::SetModified();
 
 	string current = (string) UI::QueryWidget(`id(`rb), `CurrentButton);
@@ -264,10 +274,23 @@ void StoreProtocolConfigurationDialog() {
 	}
 }
 
+symbol HandleProtocolConfigurationDialog (string id, map event) {
+    any action = event["ID"]:nil;
+
+    if (action == "remove_cipher") {
+	// FIXME
+	y2error ("Removing ciphers not yet supported");
+    } else if (action == "add_cipher") {
+	string cipher_to_add = (string) UI::QueryWidget (`id ("supported_ciphers"), `Value);
+	// FIXME
+	y2error ("Adding ciphers not yet supported");
+    }
+}
+
 /**
  * Stores the current configuration from Login Settings  Dialog
  */
-void StoreLoginSettingsDialog() {
+void StoreLoginSettingsDialog (string id, map event) {
     Sshd::SetModified();
 
     // Stores an integer value as a string
@@ -284,6 +307,11 @@ void StoreLoginSettingsDialog() {
 		[ (((boolean) UI::QueryWidget(`id(key), `Value) == true) ? "yes":"no") ]
 	    );
     });
+}
+
+void InitProtocolConfigurationDialog (string id) {
+    InitProtocolVersion();
+    InitCipherTable();
 }
 
 }

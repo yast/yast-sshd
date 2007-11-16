@@ -30,8 +30,8 @@ Configure SSHD here.<br></p>"),
     "login_settings" : _("<p><b><big>Login Settings</big></b><br>
 Configure SSHD login settings here.<br></p>"),
 
-	/* Protocol and Cipher Settings dialog help*/
-	"proto_settings" : _("<p><b><big>Protocol and Cipher Settings</big></b><br>
+    /* Protocol and Cipher Settings dialog help*/
+    "proto_settings" : _("<p><b><big>Protocol and Cipher Settings</big></b><br>
 Configure SSHD protocol version and cipher settings here.<br></p>"),
 
 ];

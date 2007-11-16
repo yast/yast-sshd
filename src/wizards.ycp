@@ -11,6 +11,8 @@ textdomain "sshd";
 
 import "Sequencer";
 import "Wizard";
+import "CWM";
+import "CWMTab";
 
 include "sshd/complex.ycp";
 include "sshd/dialogs.ycp";
@@ -21,31 +23,77 @@ include "sshd/dialogs.ycp";
  */
 any MainSequence() {
 
-    map aliases = $[
-	"server_configuration"	:	``( ServerConfigurationDialog() ),
-	"login_settings"	:	``( LoginSettingsDialog() ),
-	"proto_settings"	:	``( ProtoAndCipherDialog() ),	
+    map <string, map <string, any> > widgets = $[
+	"sc" : $[
+	    "widget"		: `custom,
+	    "help"		: HELPS["server_configuration"]:"",
+	    "custom_widget"	: ServerConfigurationDialogContent(),
+	    "handle"		: HandleServerConfigurationDialog,
+	    "init"		: InitServerConfigurationDialog,
+	    "store"		: StoreServerConfigurationDialog,
+	],
+	"ls" : $[
+	    "widget"		: `custom,
+	    "help"		: HELPS["login_settings"]:"",
+	    "custom_widget"	: LoginSettingsDialogContent(),
+	    "init"		: InitLoginSettingsDialog,
+	    "store"		: StoreLoginSettingsDialog,
+	],
+	"pacs" : $[
+	    "widget"		: `custom,
+	    "help"		: HELPS["proto_settings"]:"",
+	    "custom_widget"	: ProtoAndCipherDialogContent(),
+	    "handle"		: HandleProtocolConfigurationDialog,
+	    "init"		: InitProtocolConfigurationDialog,
+	    "store"		: StoreProtocolConfigurationDialog,
+	],
     ];
 
-    map sequence = $[
-	"ws_start" : "server_configuration",
+    map <string, any> tabs = $[
 	"server_configuration" : $[
-	    `abort	: `abort,
-	    `next	: "login_settings",
+	    "header" : _("&General"),
+	    "widget_names" : ["sc"],
+	    "contents" : ServerConfigurationDialogContent(),
 	],
 	"login_settings" : $[
-	    `abort	: `abort,
-		`next	: "proto_settings",
+	    "header" : _("&Login Settings"),
+	    "widget_names" : ["ls"],
+	    "contents" : LoginSettingsDialogContent(),
 	],
-	"proto_settings" : $[
-		`abort	: `abort,
-	    `next	: `next,
+	"proto_and_cipher" : $[
+	    "header" : _("&Protocol and Ciphers"),
+	    "widget_names" : ["pacs"],
+	    "contents" : ProtoAndCipherDialogContent(),
 	],
     ];
 
-    any ret = Sequencer::Run(aliases, sequence);
+    map <string, any> wd = $[
+	"tab" : CWMTab::CreateWidget ($[
+	    "tab_order" : ["server_configuration", "login_settings", "proto_and_cipher"],
+	    "tabs" : tabs,
+	    "widget_descr" : widgets,
+	    "initial_tab" : "server_configuration",
+	])
+    ];
 
-    return ret;
+    term contents = `VBox("tab");
+
+    list <map <string, any> > w = CWM::CreateWidgets (["tab"], (map <string, map <string, any> >) wd);
+
+    string caption = _("SSHD Server Configuration");
+    contents = CWM::PrepareDialog (contents, w);
+
+    Wizard::SetContentsButtons (
+	caption,
+	contents,
+	"",
+	Label::BackButton (),
+	Label::FinishButton()
+    );
+    Wizard::DisableBackButton ();
+    Wizard::SetTitleIcon("yast-sshd");
+
+    return CWM::Run (w, $[`abort : ReallyExit]);
 }
 
 /**

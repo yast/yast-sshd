@@ -17,17 +17,19 @@ import "Sshd";
 
 include "sshd/helps.ycp";
 
-/**
- * Server Configuration Dialog
- *
- * @return any dialog result
- */
-any ServerConfigurationDialog() {
+map current_ui_settings = UI::GetDisplayInfo();
 
-    /* a dialog caption */
-    string caption = _("SSHD Server Configuration");
+integer mbox_x = 1;
+integer mbox_y = 0.5;
 
-    term contents = `VBox (
+// Tabs have a different layout in textmode
+if (current_ui_settings["TextMode"]:false == true) {
+    mbox_x = 0;
+    mbox_y = 0;
+}
+
+term ServerConfigurationDialogContent () {
+    return `MarginBox (mbox_x, mbox_y, `VBox (
 	`Left(`Label(_("SSHD TCP Ports"))),
 	`Left(
 	    `VBox (
@@ -44,7 +46,7 @@ any ServerConfigurationDialog() {
 		    `PushButton(`id("delete_port"), _("&Delete"))
 		),
 		`VSpacing(1),
-		`Frame (
+		`MarginBox (mbox_x, mbox_y, `Frame (
 		    /* a dialog frame caption */
 		    _("Server Features"),
 		    `VBox (
@@ -55,57 +57,15 @@ any ServerConfigurationDialog() {
 			/* a check box */
 			`Left(`CheckBox(`id("Compression"),        _("Allow &Compression")))
 		    )
-		),
+		)),
 		`VStretch()
 	    )
 	)
-    );
-
-    Wizard::SetContentsButtons(caption, contents, HELPS["server_configuration"]:"",
-	    Label::BackButton(), Label::NextButton());
-    Wizard::DisableBackButton();
-    Wizard::SetTitleIcon("yast-sshd");
-
-	InitServerConfigurationDialog();
-
-    any ret = nil;
-    while(true) {
-
-	ret = UI::UserInput();
-
-	/* abort? */
-	if(ret == `abort) {
-	    if(Sshd::Abort()) break;
-	    else continue;
-	/* next */
-	} else if(ret == `next) {
-		  StoreServerConfigurationDialog();
-            break;
-	/* unknown */
-        } else if (ret == "add_port" || ret == "delete_port" || ret == "edit_port"){
-			HandleServerConfigurationDialog(ret);
-	   } else {
-            y2error("unexpected retcode: %1", ret);
-            continue;
-        }
-    }
-
-    Wizard::RestoreBackButton();
-
-    return ret;
+    ));
 }
 
-/**
- * Login Settings Dialog
- *
- * @return any dialog result
- */
-any LoginSettingsDialog() {
-
-    /* a dialog caption */
-    string caption = _("SSHD Server Login Settings");
-
-    term contents = `VBox(
+term LoginSettingsDialogContent () {
+    return `MarginBox (mbox_x, mbox_y, `VBox(
 	`Frame (
 	    _("General Login Settings"),
 	    `VBox (
@@ -130,65 +90,24 @@ any LoginSettingsDialog() {
 	    )
 	),
 	`VStretch()
-    );
-
-    Wizard::SetContentsButtons(caption, contents, HELPS["login_settings"]:"",
-	    Label::BackButton(), Label::NextButton());
-    Wizard::SetTitleIcon("yast-sshd");
-
-	InitLoginSettingsDialog();
-
-    any ret = nil;
-    while(true) {
-
-	ret = UI::UserInput();
-
-	/* abort? */
-	if(ret == `abort) {
-	    if(Sshd::Abort()) break;
-	    else continue;
-	/* next */
-	} else if(ret == `next) {
-		  StoreLoginSettingsDialog();
-            break;
-	} else if(ret == `back) {
-	    break;
-	/* unknown */
-        } else {
-            y2error("unexpected retcode: %1", ret);
-            continue;
-        }
-    }
-
- /*   Wizard::RestoreNextButton();*/
-
-    return ret;
+    ));
 }
 
-/**
- * Protocol version & Cipher Settings Dialog
- *
- * @return any dialog result
- */
-
-any ProtoAndCipherDialog() {
-    /* a dialog caption*/
-    string caption = _("SSHD Server Protocol and Cipher Settings");
-
-	term contents = `VBox (
+term ProtoAndCipherDialogContent () {
+	return `MarginBox (mbox_x, mbox_y, `VBox (
 		`Frame(
 			_("Supported SSH protocol versions"),
 			`RadioButtonGroup (`id(`rb),
 				`VBox(
-					`Left(`RadioButton (`id("SSHv21"), _("2 and 1"))),
-					`Left(`RadioButton (`id("SSHv2"), _("2 only"))),
-					`Left(`RadioButton (`id("SSHv1"), _("1 only")))
+					`Left(`RadioButton (`id("SSHv21"), _("&2 and 1"))),
+					`Left(`RadioButton (`id("SSHv2"), _("2 &only"))),
+					`Left(`RadioButton (`id("SSHv1"), _("&1 only")))
 				)
 			)
 		),
 		`HBox(
 			`VBox(
-				`Left(`ComboBox(`id("supported_ciphers"), _("Supported Ciphers:"),[])),
+				`Left(`ComboBox(`id("supported_ciphers"), _("&Supported Ciphers"),[])),
 			     `Table(`id("Ciphers"), `header("Cipher"), [])
 			),
 			`HSquash( 
@@ -202,42 +121,7 @@ any ProtoAndCipherDialog() {
 			)
 		),
 		`VStretch()
-	); 
-
-    Wizard::SetContentsButtons(caption, contents, HELPS["proto_settings"]:"",
-	    Label::BackButton(), Label::NextButton());
-    Wizard::SetNextButton(`next, Label::AcceptButton());
-    Wizard::SetTitleIcon("yast-sshd");
-
-	InitProtocolVersion();
-	InitCipherTable();
-
-    any ret = nil;
-    while(true) {
-
-	ret = UI::UserInput();
-
-	/* abort? */
-	if(ret == `abort) {
-	    if(Sshd::Abort()) break;
-	    else continue;
-	/* next */
-	} else if(ret == `next) {
-		 StoreProtocolConfigurationDialog(); 
-            break;
-	} else if(ret == `back) {
-	    break;
-	/* unknown */ 
-        } else {
-            y2error("unexpected retcode: %1", ret);
-            continue;
-        }
-    }
-
-    Wizard::RestoreNextButton();
-
-   return ret;
-
+	));
 }
 
 }
