@@ -24,3 +24,4 @@ Exec=/sbin/yast2 sshd
 Name=SSHD Configuration
 GenericName=Configure a SSHD Daemon
 X-KDE-SubstituteUID=true
+StartupNotify=true
