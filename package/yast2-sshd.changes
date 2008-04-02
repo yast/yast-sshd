@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Apr  2 16:22:45 CEST 2008 - locilka@suse.cz
+
+- SCR Agent has been moved to yast2-2.16.41.
+- Adapted to new agent paths.
+- 2.16.1
+
+-------------------------------------------------------------------
 Mon Mar 17 12:43:32 CET 2008 - jsrain@suse.cz
 
 - added 'StartupNotify=true' to the desktop file (bnc #304964)

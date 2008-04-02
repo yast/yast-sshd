@@ -70,8 +70,8 @@ global void SetModified() {
  * Reads current sshd configuration
  */
 boolean ReadSSHDSettings () {
-    foreach (string key, (list <string>) SCR::Dir(.sshd), {
-	list <string> val = (list <string>) SCR::Read(add(.sshd, key));
+    foreach (string key, (list <string>) SCR::Dir(.etc.ssh.sshd_config), {
+	list <string> val = (list <string>) SCR::Read(add(.etc.ssh.sshd_config, key));
         if (val != nil) SETTINGS[key] = val;
     });
 
@@ -86,11 +86,11 @@ boolean WriteSSHDSettings () {
     y2milestone("Writing SSHD configuration: %1", SETTINGS);
 
     foreach (string option_key, list <string> option_val, SETTINGS, {
-	SCR::Write(add(.sshd, option_key), option_val);
+	SCR::Write(add(.etc.ssh.sshd_config, option_key), option_val);
     });
     // This is very important
     // it flushes the cache, and stores the configuration on the disk
-    SCR::Write(.sshd, nil);
+    SCR::Write(.etc.ssh.sshd_config, nil);
 
     return true;
 }

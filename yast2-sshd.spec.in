@@ -1,7 +1,7 @@
 @HEADER-COMMENT@
 
 @HEADER@
-Requires:	yast2
+Requires:	yast2 >= 2.16.41
 BuildRequires:	perl-XML-Writer update-desktop-files yast2 yast2-devtools yast2-testsuite
 
 BuildArchitectures:	noarch
@@ -28,5 +28,4 @@ Configures sshd server.
 @moduledir@/*.ybc
 @moduledir@/*.ycp
 @desktopdir@/sshd.desktop
-@scrconfdir@/sshd.scr
 %doc @docdir@
