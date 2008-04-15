@@ -147,6 +147,34 @@ boolean ReadSSHDService () {
 }
 
 /**
+ * Exports the current configuration.
+ *
+ * @return map of a current configuration
+ *
+ * @struct $[
+ *   "config" : (map <string, list<string> >) SETTINGS,
+ *   "status" : (boolean) service_status,
+ * ]
+ */
+global map Export () {
+    return $[
+	"config" : SETTINGS,
+	"status" : sshd_is_running,
+    ];
+}
+
+/**
+ * Imports a configuration
+ */
+global boolean Import (map import_map) {
+    SETTINGS = (map <string, list<string> >) import_map["config"]:$[];
+    sshd_is_running = (import_map["status"]:false == true);
+    SetModified();
+    y2milestone ("Configuration has been imported");
+    return true;
+}
+
+/**
  * Restarts the sshd when the daemon was running when starting the configuration
  */
 boolean WriteSSHDService () {

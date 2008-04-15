@@ -15,6 +15,8 @@
 
 textdomain "sshd";
 
+import "Progress";
+
 /* The main () */
 y2milestone ("----------------------------------------");
 y2milestone ("sshd_auto module started");
@@ -42,10 +44,15 @@ switch (func) {
 	break;
 
     // reset the current configuration to the default one
-    case "Reset" : break;
+    case "Reset" :
+	boolean orig = Progress::set (false);
+	ret = Sshd::Read();
+	Progress::set (orig);
+	break;
 
     // define map of lists of packages
-    case "Packages" : break;
+    // case "Packages" :
+    //	break;
 
     // call the AutoYaST sequence here
     case "Change" :
@@ -55,22 +62,38 @@ switch (func) {
 	break;
 
     // import the configuration here
-    case "Import" : break;
+    case "Import" :
+	ret = Sshd::Import ((map) param);
+	break;
 
     // read the current configuration from system
-    case "Read" : break;
+    case "Read" :
+	boolean orig1 = Progress::set (false);
+	ret = Sshd::Read();
+	Progress::set (orig1);
+	break;
 
     // export the current configuration from memory
-    case "Export" : break;
+    case "Export" :
+	ret = Sshd::Export();
+	break;
 
     // return the modified flag
-    case "GetModified" : break;
+    case "GetModified" :
+	ret = Sshd::GetModified();
+	break;
 
     // set the modified flag
-    case "SetModified" : break;
+    case "SetModified" :
+	Sshd::SetModified();
+	break;
 
     // write the confuguration to the system
-    case "Write" : break;
+    case "Write" :
+	boolean orig2 = Progress::set (false);
+	ret = Sshd::Write();
+	Progress::set (orig2);
+	break;
     
     y2error("Unknown function: %1, Params %2", func, param);
 }
