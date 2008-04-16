@@ -37,14 +37,14 @@ term ServerConfigurationDialogContent () {
 		    /* A table header */
 		    `Table(`id("Port"), `header("Port"), [])
 		),
-		`HBox (
+		`Left (`HBox (
 		    /* a push button */
 		    `PushButton(`id("add_port"), _("&Add...")),
 		    /* a push button */
 		    `PushButton(`id("edit_port"), _("&Edit...")),
 		    /* a push button */
 		    `PushButton(`id("delete_port"), _("&Delete"))
-		),
+		)),
 		`VSpacing(1),
 		`MarginBox (mbox_x, mbox_y, `Frame (
 		    /* a dialog frame caption */
@@ -80,7 +80,7 @@ term LoginSettingsDialogContent () {
 	    _("Authentication Settings"),
 	    `VBox (
 		/* A text entry */
-		`Left(`TextEntry(`id("MaxAuthTries"),           _("Ma&ximum Authentication Tries"))),
+		`Left(`InputField(`id("MaxAuthTries"),           _("Ma&ximum Authentication Tries"))),
 		/* A check box */
 		`Left(`CheckBox (`id("PasswordAuthentication"), _("Pa&ssword Authentication"))),
 		/* A check box */
