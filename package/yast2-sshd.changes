@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr 16 11:04:43 CEST 2008 - locilka@suse.cz
+
+- Added support for AutoYaST (#375850).
+- 2.16.2
+
+-------------------------------------------------------------------
 Wed Apr  2 16:22:45 CEST 2008 - locilka@suse.cz
 
 - SCR Agent has been moved to yast2-2.16.41.

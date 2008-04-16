@@ -1,0 +1,119 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+y2_sshd_config =
+    Port
+    | AddressFamily
+    | ListenAddress
+    | Protocol
+    | HostKey
+    | HostKeys
+    | Lifetime
+    | KeyRegenerationInterval
+    | ServerKeyBits
+    | SyslogFacility
+    | LogLevel
+    | LoginGraceTime
+    | PermitRootLogin
+    | StrictModes
+    | MaxAuthTries
+    | RSAAuthentication
+    | PubkeyAuthentication
+    | AuthorizedKeysFile
+    | RhostsRSAAuthentication
+    | HostbasedAuthentication
+    | IgnoreUserKnownHosts
+    | IgnoreRhosts
+    | PasswordAuthentication
+    | PermitEmptyPasswords
+    | ChallengeResponseAuthentication
+    | KerberosAuthentication
+    | KerberosOrLocalPasswd
+    | KerberosTicketCleanup
+    | KerberosGetAFSToken
+    | GSSAPIAuthentication
+    | GSSAPICleanupCredentials
+    | GSSAPIEnableMITMAttack
+    | UsePAM
+    | AllowTcpForwarding
+    | GatewayPorts
+    | X11Forwarding
+    | X11DisplayOffset
+    | X11UseLocalhost
+    | PrintMotd
+    | PrintLastLog
+    | TCPKeepAlive
+    | UseLogin
+    | UsePrivilegeSeparation
+    | PermitUserEnvironment
+    | Compression
+    | ClientAliveInterval
+    | ClientAliveCountMax
+    | UseDNS
+    | PidFile
+    | MaxStartups
+    | PermitTunnel
+    | Banner
+    | Subsystem
+    | AcceptEnv
+
+sshd = element sshd {
+    status? &
+    y2_sshd_config*
+}
+status = element status { text }
+Port = element Port { text }
+AddressFamily = element AddressFamily { text }
+ListenAddress = element ListenAddress { text }
+Protocol = element Protocol { text }
+HostKey = element HostKey { text }
+HostKeys = element HostKeys { text }
+Lifetime = element Lifetime { text }
+KeyRegenerationInterval = element KeyRegenerationInterval { text }
+ServerKeyBits = element ServerKeyBits { text }
+SyslogFacility = element SyslogFacility { text }
+LogLevel = element LogLevel { text }
+LoginGraceTime = element LoginGraceTime { text }
+PermitRootLogin = element PermitRootLogin { text }
+StrictModes = element StrictModes { text }
+MaxAuthTries = element MaxAuthTries { text }
+RSAAuthentication = element RSAAuthentication { text }
+PubkeyAuthentication = element PubkeyAuthentication { text }
+AuthorizedKeysFile = element AuthorizedKeysFile { text }
+RhostsRSAAuthentication = element RhostsRSAAuthentication { text }
+HostbasedAuthentication = element HostbasedAuthentication { text }
+IgnoreUserKnownHosts = element IgnoreUserKnownHosts { text }
+IgnoreRhosts = element IgnoreRhosts { text }
+PasswordAuthentication = element PasswordAuthentication { text }
+PermitEmptyPasswords = element PermitEmptyPasswords { text }
+ChallengeResponseAuthentication = element ChallengeResponseAuthentication { text }
+KerberosAuthentication = element KerberosAuthentication { text }
+KerberosOrLocalPasswd = element KerberosOrLocalPasswd { text }
+KerberosTicketCleanup = element KerberosTicketCleanup { text }
+KerberosGetAFSToken = element KerberosGetAFSToken { text }
+GSSAPIAuthentication = element GSSAPIAuthentication { text }
+GSSAPICleanupCredentials = element GSSAPICleanupCredentials { text }
+GSSAPIEnableMITMAttack = element GSSAPIEnableMITMAttack { text }
+UsePAM = element UsePAM { text }
+AllowTcpForwarding = element AllowTcpForwarding { text }
+GatewayPorts = element GatewayPorts { text }
+X11Forwarding = element X11Forwarding { text }
+X11DisplayOffset = element X11DisplayOffset { text }
+X11UseLocalhost = element X11UseLocalhost { text }
+PrintMotd = element PrintMotd { text }
+PrintLastLog = element PrintLastLog { text }
+TCPKeepAlive = element TCPKeepAlive { text }
+UseLogin = element UseLogin { text }
+UsePrivilegeSeparation = element UsePrivilegeSeparation { text }
+PermitUserEnvironment = element PermitUserEnvironment { text }
+Compression = element Compression { text }
+ClientAliveInterval = element ClientAliveInterval { text }
+ClientAliveCountMax = element ClientAliveCountMax { text }
+UseDNS = element UseDNS { text }
+PidFile = element PidFile { text }
+MaxStartups = element MaxStartups { text }
+PermitTunnel = element PermitTunnel { text }
+Banner = element Banner { text }
+Subsystem = element Subsystem { text }
+AcceptEnv = element AcceptEnv { text }

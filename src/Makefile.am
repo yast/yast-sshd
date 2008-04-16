@@ -19,11 +19,14 @@ module_DATA =			\
 	Sshd.ycp		\
 	SshdCommandLine.ycp
 
+rncdir =  $(schemadir)/autoyast/rnc
+rnc_DATA = sshd_config.rnc
+
 # create a symlink for local build, #145327
 sshd:
 	ln -sf . $@
 ycpchook = sshd
 
-EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA)
+EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA) $(rnc_DATA)
 
 include $(top_srcdir)/Makefile.am.common

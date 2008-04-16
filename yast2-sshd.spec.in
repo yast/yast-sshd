@@ -28,4 +28,5 @@ Configures sshd server.
 @moduledir@/*.ybc
 @moduledir@/*.ycp
 @desktopdir@/sshd.desktop
+@schemadir@/autoyast/rnc/firewall.rnc
 %doc @docdir@
