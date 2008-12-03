@@ -35,7 +35,7 @@ term ServerConfigurationDialogContent () {
 	    `VBox (
 		`MinSize( 40, 5,
 		    /* A table header */
-		    `Table(`id("Port"), `header("Port"), [])
+		    `Table(`id("Port"), `header(_("Port")), [])
 		),
 		`Left (`HBox (
 		    /* a push button */
