@@ -74,33 +74,43 @@ void InitPortsTable () {
  */
 
 void InitCipherTable () {
-	list <string> wrk = Sshd::GetDefaultSSHDOption("Cipher");
-	list <string> defaults = splitstring(wrk[0]:"",",");
-	list <string> ciphers = [];
-	list <term> default_items = [];
-	list <term> items = [];
+	list <string> tmp_list = Sshd::GetDefaultSSHDOption ("Ciphers");
+	list <string> defaults = sort (splitstring (tmp_list[0]:"", ", "));
 
-	if (defaults != nil && defaults != []) {
-		foreach (string cipher, defaults,{
-			items = add (items, `item(`id(cipher), cipher));
-		});
-		//For combo box - list all supported c's
-		UI::ChangeWidget(`id("supported_ciphers"), `Items, default_items);
+	tmp_list = Sshd::GetSSHDOption ("Ciphers");
+	list <string> current_ciphers = sort (splitstring (tmp_list[0]:"", ", "));
 
+	// nil must have been set before
+	// it says the item should be removed from config and use the 'default' settings
+	if (tmp_list == nil)
+	    current_ciphers = defaults;
 
-		foreach (string cipher, ciphers,{
-			items = add (items, `item(`id(cipher), cipher));
-		});
+	// ciphers to enable
+	list <term> combobox_items = [];
+	// all enabled ciphers
+	list <term> table_items = [];
 
-		UI::ChangeWidget(`id("Ciphers"),`Items, items);
-		UI::ChangeWidget(`id("add_cipher"), `Enabled, true);
-		UI::ChangeWidget(`id("remove_cipher"), `Enabled, true);
-	}
-	else {
-		UI::ChangeWidget(`id("Ciphers"),`Items,defaults);
-		UI::ChangeWidget(`id("Ciphers"),`Items, []);
-		UI::ChangeWidget(`id("remove_cipher"), `Enabled, false);
-	}
+	// all default (known) ciphers
+	foreach (string cipher, defaults, {
+	    // cipher is enabled
+	    if (contains (current_ciphers, cipher)) {
+		table_items = add (table_items, `item (`id (cipher), cipher));
+	    // cipher is disabled
+	    } else {
+		combobox_items = add (combobox_items, `item (`id (cipher), cipher));
+	    }
+	});
+
+	UI::ChangeWidget (`id ("supported_ciphers"), `Items, combobox_items);
+	UI::ChangeWidget (`id ("Ciphers"), `Items, table_items);
+
+	// some cipher(s) are allowed -> allow removing them
+	UI::ChangeWidget (`id ("remove_cipher"), `Enabled, (table_items != nil && size (table_items) > 0));
+	UI::ChangeWidget (`id ("Ciphers"), `Enabled, (table_items != nil && size (table_items) > 0));
+
+	// some cipher(s) are not allowed -> allow adding them
+	UI::ChangeWidget (`id ("add_cipher"), `Enabled, (table_items != nil && size (combobox_items) > 0));
+	UI::ChangeWidget (`id ("supported_ciphers"), `Enabled, (table_items != nil && size (combobox_items) > 0));
 }
 
 /*
@@ -277,14 +287,56 @@ void StoreProtocolConfigurationDialog (string id, map event) {
 symbol HandleProtocolConfigurationDialog (string id, map event) {
     any action = event["ID"]:nil;
 
+    list <string> tmp_list = Sshd::GetSSHDOption ("Ciphers");
+
+    // nil must have been set before
+    // it says the item should be removed from config and use the 'default' settings
+    if (tmp_list == nil)
+	tmp_list = Sshd::GetDefaultSSHDOption ("Ciphers");
+
+    list <string> ciphers = sort (splitstring (tmp_list[0]:"", ", "));
+    list <string> backup = ciphers;
+
     if (action == "remove_cipher") {
-	// FIXME
-	y2error ("Removing ciphers not yet supported");
+	string cipher_to_remove = (string) UI::QueryWidget (`id ("Ciphers"), `CurrentItem);
+	if (Confirm::Delete (cipher_to_remove)) {
+	    y2milestone ("Removing: %1", cipher_to_remove);
+
+	    ciphers = filter (string one_cipher, ciphers, {
+		return (one_cipher != cipher_to_remove);
+	    });
+	}
     } else if (action == "add_cipher") {
 	string cipher_to_add = (string) UI::QueryWidget (`id ("supported_ciphers"), `Value);
-	// FIXME
-	y2error ("Adding ciphers not yet supported");
+	y2milestone ("Adding: %1", cipher_to_add);
+
+	if (cipher_to_add != nil) {
+	    ciphers = toset (add (ciphers, cipher_to_add));
+	}
     }
+
+    // Nothing has changed
+    if (ciphers == backup) {
+	return nil;
+    }
+
+    if (ciphers != nil) {
+	list <string> tmp_list = Sshd::GetDefaultSSHDOption ("Ciphers");
+	list <string> defaults = sort (splitstring (tmp_list[0]:"", ", "));
+
+	// the default ciphers -> remove the entry completely
+	if (ciphers == defaults) {
+	    Sshd::SetSSHDOption ("Ciphers", nil);
+	} else {
+	    Sshd::SetSSHDOption ("Ciphers", [mergestring (ciphers, ",")]);
+	}
+    } else {
+	y2error ("Ciphers: %1", ciphers);
+    }
+
+    InitCipherTable();
+
+    return nil;
 }
 
 /**

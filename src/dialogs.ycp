@@ -114,7 +114,7 @@ term ProtoAndCipherDialogContent () {
 				`VBox (
 				    `VSpacing( 1.1 ),
 					`PushButton ( `id ( "add_cipher" ), `opt ( `hstretch ), " " + Label::AddButton() + " "),
-				    `PushButton ( `id ( "remove_cipher" ), `opt ( `hstretch ), " " + Label::RemoveButton() + " "),
+				    `PushButton ( `id ( "remove_cipher" ), `opt ( `hstretch ), " " + Label::DeleteButton() + " "),
 				    `Empty(`opt(`vstretch))
 
 				)
