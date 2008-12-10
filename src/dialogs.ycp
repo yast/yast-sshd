@@ -108,7 +108,7 @@ term ProtoAndCipherDialogContent () {
 		`HBox(
 			`VBox(
 				`Left(`ComboBox(`id("supported_ciphers"), _("&Supported Ciphers"),[])),
-			     `Table(`id("Ciphers"), `header("Cipher"), [])
+			     `Table(`id("Ciphers"), `header(_("Cipher")), [])
 			),
 			`HSquash( 
 				`VBox (
