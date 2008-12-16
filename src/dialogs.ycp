@@ -29,7 +29,7 @@ if (current_ui_settings["TextMode"]:false == true) {
 }
 
 term ServerConfigurationDialogContent () {
-    return `MarginBox (mbox_x, mbox_y, `VBox (
+    return `VBox (
 	`Left(`Label(_("SSHD TCP Ports"))),
 	`Left(
 	    `VBox (
@@ -46,39 +46,39 @@ term ServerConfigurationDialogContent () {
 		    `PushButton(`id("delete_port"), _("&Delete"))
 		)),
 		`VSpacing(1),
-		`MarginBox (mbox_x, mbox_y, `Frame (
+		`Frame (
 		    /* a dialog frame caption */
 		    _("Server Features"),
-		    `VBox (
+		    `MarginBox (mbox_x, mbox_y, `VBox (
 			/* a check box */
 			`Left(`CheckBox(`id("AllowTcpForwarding"), _("Allow &TCP Forwarding"))),
 			/* a check box */
 			`Left(`CheckBox(`id("X11Forwarding"),      _("Allow &X11 Forwarding"))),
 			/* a check box */
 			`Left(`CheckBox(`id("Compression"),        _("Allow &Compression")))
-		    )
-		)),
+		    ))
+		),
 		`VStretch()
 	    )
 	)
-    ));
+    );
 }
 
 term LoginSettingsDialogContent () {
-    return `MarginBox (mbox_x, mbox_y, `VBox(
+    return `VBox (
 	`Frame (
 	    _("General Login Settings"),
-	    `VBox (
+	    `MarginBox (mbox_x, mbox_y, `VBox (
 		/* A check box */
 		`Left(`CheckBox(`id("PrintMotd"),            _("Print &Message of the Day After Login"))),
 		/* A check box */
 		`Left(`CheckBox(`id("PermitRootLogin"),      _("Permi&t Root Login")))
-	    )
+	    ))
 	),
 	`VSpacing(1),
 	`Frame (
 	    _("Authentication Settings"),
-	    `VBox (
+	    `MarginBox (mbox_x, mbox_y, `VBox (
 		/* A text entry */
 		`Left(`InputField(`id("MaxAuthTries"),           _("Ma&ximum Authentication Tries"))),
 		/* A check box */
@@ -87,22 +87,22 @@ term LoginSettingsDialogContent () {
 		`Left(`CheckBox (`id("RSAAuthentication"),      _("RSA Authenti&cation"))),
 		/* A check box */
 		`Left(`CheckBox (`id("PubkeyAuthentication"),   _("Public &Key Authentication")))
-	    )
+	    ))
 	),
 	`VStretch()
-    ));
+    );
 }
 
 term ProtoAndCipherDialogContent () {
-	return `MarginBox (mbox_x, mbox_y, `VBox (
+	return `VBox (
 		`Frame(
 			_("Supported SSH protocol versions"),
 			`RadioButtonGroup (`id(`rb),
-				`VBox(
+				`MarginBox (mbox_x, mbox_y, `VBox(
 					`Left(`RadioButton (`id("SSHv21"), _("&2 and 1"))),
 					`Left(`RadioButton (`id("SSHv2"), _("2 &only"))),
 					`Left(`RadioButton (`id("SSHv1"), _("&1 only")))
-				)
+				))
 			)
 		),
 		`HBox(
@@ -121,7 +121,7 @@ term ProtoAndCipherDialogContent () {
 			)
 		),
 		`VStretch()
-	));
+	);
 }
 
 }

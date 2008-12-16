@@ -88,9 +88,10 @@ any MainSequence() {
 	contents,
 	"",
 	Label::BackButton (),
-	Label::FinishButton()
+	Label::OKButton()
     );
-    Wizard::DisableBackButton ();
+    Wizard::HideBackButton ();
+    Wizard::SetAbortButton(`abort, Label::CancelButton());
     Wizard::SetTitleIcon("yast-sshd");
 
     return CWM::Run (w, $[`abort : ReallyExit]);
