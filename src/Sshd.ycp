@@ -20,6 +20,7 @@ import "Service";
 import "Popup";
 import "SCR";
 import "Mode";
+import "SuSEFirewall";
 
 /**
  * Data was modified?
@@ -223,18 +224,22 @@ global boolean Read() {
     /* SSHD read dialog caption */
     string caption = _("Initializing the SSHD Configuration");
 
-    integer steps = 2;
+    integer steps = 3;
 
     Progress::New( caption, " ", steps, [
-	    /* Progress stage 1/2 */
+	    /* Progress stage 1 */
 	    _("Read the current SSHD configuration"),
-	    /* Progress stage 2/2 */
-	    _("Read the current SSHD state")
+	    /* Progress stage 2 */
+	    _("Read the current SSHD state"),
+	    /* Progress stage 3 */
+	    _("Read firewall settings")
 	], [
-	    /* Progress step 1/2 */
+	    /* Progress step 1 */
 	    _("Reading the current SSHD configuration..."),
-	    /* Progress step 2/2 */
+	    /* Progress step 2 */
 	    _("Reading the current SSHD state..."),
+	    /* Progress step 3 */
+	    _("Reading firewall settings..."),
 	    /* Progress finished */
 	    Message::Finished()
 	],
@@ -256,6 +261,14 @@ global boolean Read() {
     sleep(sl);
 
     if (PollAbort()) return false;
+    Progress::NextStep();
+    boolean progress_state = Progress::set (false);
+    /* Error message */
+    if(!SuSEFirewall::Read()) Report::Error(_("Cannot read firewall settings."));
+    Progress::set (progress_state);
+    sleep(sl);
+
+    if (PollAbort()) return false;
     Progress::NextStage ();
     sleep(sl);
 
@@ -272,18 +285,22 @@ global boolean Write() {
     /* SSHD read dialog caption */
     string caption = _("Saving the SSHD Configuration");
 
-    integer steps = 2;
+    integer steps = 3;
     
     Progress::New(caption, " ", steps, [
-	    /* Progress stage 1/2 */
+	    /* Progress stage 1 */
 	    _("Write the SSHD settings"),
-	    /* Progress stage 2/2 */
-	    _("Adjust the SSHD service")
+	    /* Progress stage 2 */
+	    _("Adjust the SSHD service"),
+	    /* Progress stage 3 */
+	    _("Write firewall settings")
 	], [
-	    /* Progress step 1/2 */
+	    /* Progress step 1 */
 	    _("Writing the SSHD settings..."),
-	    /* Progress step 2/2 */
+	    /* Progress step 2 */
 	    _("Adjusting the SSHD service..."),
+	    /* Progress step 3 */
+	    _("Writing firewall settings..."),
 	    Message::Finished()
 	],
 	""
@@ -301,6 +318,14 @@ global boolean Write() {
     Progress::NextStage ();
     /* Error message */
     if(!WriteSSHDService()) Report::Error (Message::CannotAdjustService("sshd"));
+    sleep(sl);
+
+    if(PollAbort()) return false;
+    Progress::NextStage ();
+    boolean progress_state = Progress::set (false);
+    /* Error message */
+    if(!SuSEFirewall::Write()) Report::Error(_("Cannot write firewall settings."));
+    Progress::set (progress_state);
     sleep(sl);
 
     Progress::NextStage ();

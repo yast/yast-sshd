@@ -13,6 +13,7 @@ import "Sequencer";
 import "Wizard";
 import "CWM";
 import "CWMTab";
+import "CWMFirewallInterfaces";
 
 include "sshd/complex.ycp";
 include "sshd/dialogs.ycp";
@@ -47,12 +48,16 @@ any MainSequence() {
 	    "init"		: InitProtocolConfigurationDialog,
 	    "store"		: StoreProtocolConfigurationDialog,
 	],
+	"fw" : CWMFirewallInterfaces::CreateOpenFirewallWidget ($[
+	    "services" : [ "service:sshd" ],
+	    "display_details" : true,
+	]),
     ];
 
     map <string, any> tabs = $[
 	"server_configuration" : $[
 	    "header" : _("&General"),
-	    "widget_names" : ["sc"],
+	    "widget_names" : ["sc", "fw"],
 	    "contents" : ServerConfigurationDialogContent(),
 	],
 	"login_settings" : $[

@@ -58,6 +58,8 @@ term ServerConfigurationDialogContent () {
 			`Left(`CheckBox(`id("Compression"),        _("Allow &Compression")))
 		    ))
 		),
+		`VSpacing(1),
+		"fw",
 		`VStretch()
 	    )
 	)

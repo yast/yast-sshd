@@ -3,6 +3,7 @@ Tue Dec 16 16:31:25 CET 2008 - locilka@suse.cz
 
 - Dialog buttons adapted to the current style guide.
 - Better dialog layout.
+- Added support for firewall tuning (bnc #396375).
 
 -------------------------------------------------------------------
 Wed Dec 10 16:43:46 CET 2008 - locilka@suse.cz
