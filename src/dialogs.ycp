@@ -83,8 +83,11 @@ term LoginSettingsDialogContent () {
 	    `MarginBox (mbox_x, mbox_y, `VBox (
 		/* A text entry */
 		`Left(`InputField(`id("MaxAuthTries"),           _("Ma&ximum Authentication Tries"))),
-		/* A check box */
-		`Left(`CheckBox (`id("PasswordAuthentication"), _("Pa&ssword Authentication"))),
+
+// BNC #469207
+//		/* A check box */
+//		`Left(`CheckBox (`id("PasswordAuthentication"), _("Pa&ssword Authentication"))),
+
 		/* A check box */
 		`Left(`CheckBox (`id("RSAAuthentication"),      _("RSA Authenti&cation"))),
 		/* A check box */

@@ -151,7 +151,7 @@ void InitLoginSettingsDialog (string id) {
     UI::ChangeWidget(`id("MaxAuthTries"), `Value, MaxAuthTries[0]:"0");
 
     foreach (string key, ["PrintMotd", "PermitRootLogin",
-	"PasswordAuthentication", "RSAAuthentication", "PubkeyAuthentication"], {
+	/* "PasswordAuthentication", BNC #469207 */ "RSAAuthentication", "PubkeyAuthentication"], {
 	    UI::ChangeWidget(`id(key), `Value, (Sshd::GetSSHDOption(key) == ["yes"]));
     });
 }
@@ -353,7 +353,7 @@ void StoreLoginSettingsDialog (string id, map event) {
 
     // Stores all boolean values and turns them to the "yes"/"no" notation
     foreach (string key, ["PrintMotd", "PermitRootLogin",
-	"PasswordAuthentication", "RSAAuthentication", "PubkeyAuthentication"], {
+	/* "PasswordAuthentication", BNC #469207 */ "RSAAuthentication", "PubkeyAuthentication"], {
 	    Sshd::SetSSHDOption(
 		key,
 		[ (((boolean) UI::QueryWidget(`id(key), `Value) == true) ? "yes":"no") ]

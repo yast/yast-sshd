@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan 29 10:50:10 CET 2009 - locilka@suse.cz
+
+- Dropping possibility to adjust PasswordAuthentication option
+  as it has no or rather misleading effect (bnc #469207).
+- 2.18.0
+
+-------------------------------------------------------------------
 Tue Dec 16 16:31:25 CET 2008 - locilka@suse.cz
 
 - Dialog buttons adapted to the current style guide.
