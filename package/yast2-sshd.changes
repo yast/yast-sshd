@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan 29 10:50:10 CET 2009 - locilka@suse.cz
+
+- Dropping possibility to adjust PasswordAuthentication option
+  as it has no or rather misleading effect (bnc #469207).
+- 2.17.2
+
+-------------------------------------------------------------------
 Wed Dec 10 16:43:46 CET 2008 - locilka@suse.cz
 
 - Forgotten text marked for translation (bnc #450474).
