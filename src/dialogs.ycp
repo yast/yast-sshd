@@ -89,9 +89,9 @@ term LoginSettingsDialogContent () {
 //		`Left(`CheckBox (`id("PasswordAuthentication"), _("Pa&ssword Authentication"))),
 
 		/* A check box */
-		`Left(`CheckBox (`id("RSAAuthentication"),      _("RSA Authenti&cation"))),
+		`Left(`CheckBox (`id("RSAAuthentication"),      _("RSA Authenti&cation (Protocol V. 1 Only)"))),
 		/* A check box */
-		`Left(`CheckBox (`id("PubkeyAuthentication"),   _("Public &Key Authentication")))
+		`Left(`CheckBox (`id("PubkeyAuthentication"),   _("Public &Key Authentication (Protocol V. 2 Only)")))
 	    ))
 	),
 	`VStretch()

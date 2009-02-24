@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 24 16:44:38 CET 2009 - locilka@suse.cz
+
+- Added Login Settings help and improved the current dialog labels
+  to be more accurate (bnc #470357).`
+
+-------------------------------------------------------------------
 Thu Jan 29 10:50:10 CET 2009 - locilka@suse.cz
 
 - Dropping possibility to adjust PasswordAuthentication option
