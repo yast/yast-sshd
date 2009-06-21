@@ -6,7 +6,7 @@ BuildRequires:	perl-XML-Writer update-desktop-files yast2 yast2-devtools yast2-t
 
 BuildArchitectures:	noarch
 
-Summary:	Configuration of sshd
+Summary:	YaST2 - SSH Server Configuration
 
 %description
 Configures sshd server.
