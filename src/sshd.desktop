@@ -19,9 +19,8 @@ X-SuSE-YaST-AutoInstClonable=true
 X-SuSE-YaST-AutoInstRequires=lan
 
 Icon=yast-sshd
-Exec=/sbin/yast2 sshd 
+Exec=xdg-su -c "/sbin/yast2 sshd"
 
 Name=SSHD Configuration
 GenericName=Configure a SSHD Daemon
-X-KDE-SubstituteUID=true
 StartupNotify=true
