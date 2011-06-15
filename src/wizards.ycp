@@ -14,9 +14,19 @@ import "Wizard";
 import "CWM";
 import "CWMTab";
 import "CWMFirewallInterfaces";
+import "CWMServiceStart";
+import "Sshd";
 
 include "sshd/complex.ycp";
 include "sshd/dialogs.ycp";
+
+void SaveAndRestart () {
+    Wizard::CreateDialog ();
+    Wizard::RestoreHelp (HELPS["write"]:"");
+    Sshd::Write ();
+    sleep (1000);
+    UI::CloseDialog ();
+}
 
 /**
  * Main workflow of the sshd configuration
@@ -52,9 +62,49 @@ any MainSequence() {
 	    "services" : [ "service:sshd" ],
 	    "display_details" : true,
 	]),
+	"start_stop" : CWMServiceStart::CreateStartStopWidget ($[
+	    "service_id" : "sshd",
+	    // label - service status, informative text
+	    "service_running_label" : _("SSH server is running"),
+	    // label - service status, informative text
+	    "service_not_running_label" : _("SSH server is not running"),
+	    // push button (SSH service handling)
+	    "start_now_button" : _("&Start SSH Server Now"),
+	    // push button (SSH service handling)
+	    "stop_now_button" : _("S&top SSH Server Now"),
+	    "save_now_action" : SaveAndRestart,
+	    // push button (SSH service handling)
+	    "save_now_button" : _("Save Settings and Reload SSH Server &Now"),
+	    "help" : sformat (CWMServiceStart::StartStopHelpTemplate (true),
+	    // part of help text, used to describe pusbuttons (matching SSH service handling but without "&")
+	    _("Start SSH Server Now"),
+	    // part of help text, used to describe pusbuttons (matching SSH service handling but without "&")
+	    _("Stop SSH Server Now"),
+	    // part of help text, used to describe pusbuttons (matching SSH service handling but without "&")
+	    _("Save Settings and Reload SSH Server Now")),
+	]),
+	"auto_start_up" : CWMServiceStart::CreateAutoStartWidget ($[
+	    "get_service_auto_start" : Sshd::GetStartService,
+	    "set_service_auto_start" : Sshd::SetStartService,
+	    // radio button (starting SSH service - option 1)
+	    "start_auto_button" : _("Now and When &Booting"),
+	    // radio button (starting SSH service - option 2)
+	    "start_manual_button" : _("&Manually"),
+	    "help" : sformat (CWMServiceStart::AutoStartHelpTemplate (),
+		// part of help text, used to describe radiobuttons (matching starting SSH service but without "&")
+		_("Now and When Booting"),
+		// part of help text, used to describe radiobuttons (matching starting SSH service but without "&")
+		_("Manually")
+	    ),
+	]),
     ];
 
     map <string, any> tabs = $[
+	"service_configuration" : $[
+	    "header" : _("&Start-Up"),
+	    "widget_names" : ["start_stop", "auto_start_up"],
+	    "contents" : ServiceConfigurationDialogContent(),
+	],
 	"server_configuration" : $[
 	    "header" : _("&General"),
 	    "widget_names" : ["sc", "fw"],
@@ -74,7 +124,7 @@ any MainSequence() {
 
     map <string, any> wd = $[
 	"tab" : CWMTab::CreateWidget ($[
-	    "tab_order" : ["server_configuration", "login_settings", "proto_and_cipher"],
+	    "tab_order" : ["service_configuration", "server_configuration", "login_settings", "proto_and_cipher"],
 	    "tabs" : tabs,
 	    "widget_descr" : widgets,
 	    "initial_tab" : "server_configuration",

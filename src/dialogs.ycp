@@ -28,6 +28,15 @@ if (current_ui_settings["TextMode"]:false == true) {
     mbox_y = 0;
 }
 
+term ServiceConfigurationDialogContent () {
+    return `VBox (
+	"start_stop",
+	`VSpacing(1),
+	"auto_start_up",
+	`VStretch()
+    );
+}
+
 term ServerConfigurationDialogContent () {
     return `VBox (
 	`Left(`Label(_("SSHD TCP Ports"))),
@@ -45,7 +54,7 @@ term ServerConfigurationDialogContent () {
 		    /* a push button */
 		    `PushButton(`id("delete_port"), _("&Delete"))
 		)),
-		`VSpacing(1),
+		`VSpacing (1),
 		`Frame (
 		    /* a dialog frame caption */
 		    _("Server Features"),

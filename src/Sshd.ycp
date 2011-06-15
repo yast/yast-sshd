@@ -30,7 +30,7 @@ boolean modified = false;
 /**
  * Sleep time between Read or Write steps
  */
-integer sl = 200;
+integer sl = 150;
 
 /**
  * Returns whether the configuration has been modified.
@@ -44,6 +44,40 @@ global boolean GetModified() {
  */
 global void SetModified() {
     modified = true;
+}
+
+string service_name = "sshd";
+
+boolean start_service = nil;
+
+global boolean GetStartService () {
+    return start_service;
+}
+
+global void SetStartService (boolean new_state) {
+    if (new_state == nil) {
+	y2error ("Cannot set 'StartService' to %1", new_state);
+	return;
+    } else if (start_service == new_state) {
+	y2warning ("'StartService' unchanged");
+	return;
+    }
+
+    start_service = new_state;
+    SetModified();
+}
+
+/**
+ * Describes whether the daemon is running
+ */
+boolean Running () {
+    return (Service::Status(service_name) == 0);
+}
+
+boolean ReadStartService () {
+    start_service = Running();
+
+    return (start_service != nil);
 }
 
 /**
@@ -129,26 +163,6 @@ global void SetSSHDOption (string option_key, list <string> option_vals) {
 }
 
 /**
- * Describes whether the daemon is running
- */
-boolean sshd_is_running = false;
-
-/**
- * Reads current sshd status
- */
-boolean ReadSSHDService () {
-    if (Service::Status("sshd") == 0) {
-	sshd_is_running = true;
-    } else {
-	sshd_is_running = false;
-    }
-
-    y2milestone((sshd_is_running ? "SSH is running":"SSH is not running"));
-
-    return true;
-}
-
-/**
  * Exports the current configuration.
  *
  * @return map of a current configuration
@@ -161,7 +175,7 @@ boolean ReadSSHDService () {
 global map Export () {
     return $[
 	"config" : SETTINGS,
-	"status" : sshd_is_running,
+	"status" : Running(),
     ];
 }
 
@@ -170,26 +184,10 @@ global map Export () {
  */
 global boolean Import (map import_map) {
     SETTINGS = (map <string, list<string> >) import_map["config"]:$[];
-    sshd_is_running = (import_map["status"]:false == true);
+    SetStartService (import_map["status"]:false == true);
     SetModified();
     y2milestone ("Configuration has been imported");
     return true;
-}
-
-/**
- * Restarts the sshd when the daemon was running when starting the configuration
- */
-boolean WriteSSHDService () {
-    boolean all_ok = true;
-
-    if (sshd_is_running) {
-	y2milestone("Restarting sshd daemon");
-	all_ok = Service::Restart("sshd");
-    } else {
-	y2milestone("Sshd is not running - leaving...");
-    }
-
-    return all_ok;
 }
 
 /**
@@ -225,7 +223,7 @@ global boolean Read() {
     /* SSHD read dialog caption */
     string caption = _("Initializing the SSHD Configuration");
 
-    integer steps = 3;
+    integer steps = 4;
 
     Progress::New( caption, " ", steps, [
 	    /* Progress stage 1 */
@@ -233,15 +231,18 @@ global boolean Read() {
 	    /* Progress stage 2 */
 	    _("Read the current SSHD state"),
 	    /* Progress stage 3 */
-	    _("Read firewall settings")
+	    _("Read firewall settings"),
+	    /* Progress stage 4 */
+	    _("Read service status"),
 	], [
 	    /* Progress step 1 */
 	    _("Reading the current SSHD configuration..."),
 	    /* Progress step 2 */
-	    _("Reading the current SSHD state..."),
+	    _("Reading the current SSHD state"),
 	    /* Progress step 3 */
 	    _("Reading firewall settings..."),
-	    /* Progress finished */
+	    /* Progress step 4 */
+	    _("Reading service status..."),
 	    Message::Finished()
 	],
 	""
@@ -251,14 +252,12 @@ global boolean Read() {
 
     if (PollAbort()) return false;
     Progress::NextStage();
-    /* Error message */
     if(!ReadSSHDSettings()) Report::Error(Message::CannotReadCurrentSettings());
     sleep(sl);
 
     if (PollAbort()) return false;
-    Progress::NextStep();
-    /* Error message */
-    if(!ReadSSHDService()) Report::Error(_("Cannot read the current SSHD state."));
+    Progress::NextStage();
+    if (!ReadStartService()) Report::Error(Message::CannotReadCurrentSettings());
     sleep(sl);
 
     if (PollAbort()) return false;
@@ -273,7 +272,58 @@ global boolean Read() {
     Progress::NextStage ();
     sleep(sl);
 
+    if (PollAbort()) return false;
+    Progress::NextStage ();
+    start_service = Service::Enabled (service_name);
+    sleep(sl);
+
     modified = false;
+    return true;
+}
+
+boolean AdjustSSHDService () {
+    boolean enable_and_start = GetStartService();
+    boolean enabled = Service::Enabled (service_name);
+    boolean running = (Service::Status (service_name) == 0);
+
+    if (enable_and_start == nil) {
+	y2error ("Configuration error: Cannot start/stop service %1", service_name);
+	return false;
+    }
+
+    // Service enable/disable
+    if (enable_and_start == enabled) {
+	y2milestone ("Service '%1' is already in the desired state", service_name);
+    } else {
+	if (enable_and_start && !Service::Enable (service_name)) {
+	    y2error ("Cannot enable service %1", service_name);
+	    return false;
+	} else if (!enable_and_start && !Service::Disable (service_name)) {
+	    y2error ("Cannot disable service %1", service_name);
+	    return false;
+	}
+    }
+
+    // Start / restart service
+    if (enable_and_start) {
+	if (Running()) {
+	    if (!Service::Restart(service_name)) {
+		y2error ("Cannot restart service %1", service_name);
+		return false;
+	    }
+	} else {
+	    if (!Service::Start (service_name)) {
+		y2error ("Cannot start service %1", service_name);
+		return false;
+	    }
+	}
+    // Stop a running service
+    } else if (Running()) {
+	if (!Service::Stop (service_name)) {
+	    return false;
+	}
+    }
+
     return true;
 }
 
@@ -286,22 +336,22 @@ global boolean Write() {
     /* SSHD read dialog caption */
     string caption = _("Saving the SSHD Configuration");
 
-    integer steps = 3;
-    
+    integer steps = 4;
+
     Progress::New(caption, " ", steps, [
 	    /* Progress stage 1 */
 	    _("Write the SSHD settings"),
 	    /* Progress stage 2 */
-	    _("Adjust the SSHD service"),
+	    _("Write firewall settings"),
 	    /* Progress stage 3 */
-	    _("Write firewall settings")
+	    _("Adjust SSHD service"),
 	], [
 	    /* Progress step 1 */
 	    _("Writing the SSHD settings..."),
 	    /* Progress step 2 */
-	    _("Adjusting the SSHD service..."),
-	    /* Progress step 3 */
 	    _("Writing firewall settings..."),
+	    /* Progress step 3 */
+	    _("Adjusting SSHD service..."),
 	    Message::Finished()
 	],
 	""
@@ -317,16 +367,15 @@ global boolean Write() {
 
     if(PollAbort()) return false;
     Progress::NextStage ();
-    /* Error message */
-    if(!WriteSSHDService()) Report::Error (Message::CannotAdjustService("sshd"));
-    sleep(sl);
-
-    if(PollAbort()) return false;
-    Progress::NextStage ();
     boolean progress_state = Progress::set (false);
     /* Error message */
     if(!SuSEFirewall::Write()) Report::Error(_("Cannot write firewall settings."));
     Progress::set (progress_state);
+    sleep(sl);
+
+    if(PollAbort()) return false;
+    Progress::NextStage ();
+    AdjustSSHDService();
     sleep(sl);
 
     Progress::NextStage ();
