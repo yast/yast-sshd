@@ -24,7 +24,6 @@ void SaveAndRestart () {
     Wizard::CreateDialog ();
     Wizard::RestoreHelp (HELPS["write"]:"");
     Sshd::Write ();
-    sleep (1000);
     UI::CloseDialog ();
 }
 

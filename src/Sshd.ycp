@@ -28,11 +28,6 @@ import "SuSEFirewall";
 boolean modified = false;
 
 /**
- * Sleep time between Read or Write steps
- */
-integer sl = 150;
-
-/**
  * Returns whether the configuration has been modified.
  */
 global boolean GetModified() {
@@ -248,17 +243,13 @@ global boolean Read() {
 	""
     );
 
-    sleep(sl);
-
     if (PollAbort()) return false;
     Progress::NextStage();
     if(!ReadSSHDSettings()) Report::Error(Message::CannotReadCurrentSettings());
-    sleep(sl);
 
     if (PollAbort()) return false;
     Progress::NextStage();
     if (!ReadStartService()) Report::Error(Message::CannotReadCurrentSettings());
-    sleep(sl);
 
     if (PollAbort()) return false;
     Progress::NextStep();
@@ -266,16 +257,13 @@ global boolean Read() {
     /* Error message */
     if(!SuSEFirewall::Read()) Report::Error(_("Cannot read firewall settings."));
     Progress::set (progress_state);
-    sleep(sl);
 
     if (PollAbort()) return false;
     Progress::NextStage ();
-    sleep(sl);
 
     if (PollAbort()) return false;
     Progress::NextStage ();
     start_service = Service::Enabled (service_name);
-    sleep(sl);
 
     modified = false;
     return true;
@@ -357,13 +345,10 @@ global boolean Write() {
 	""
     );
 
-    sleep(sl);
-
     if(PollAbort()) return false;
     Progress::NextStage();
     /* Error message */
     if(!WriteSSHDSettings()) Report::Error (_("Cannot write the SSHD settings."));
-    sleep(sl);
 
     if(PollAbort()) return false;
     Progress::NextStage ();
@@ -371,15 +356,12 @@ global boolean Write() {
     /* Error message */
     if(!SuSEFirewall::Write()) Report::Error(_("Cannot write firewall settings."));
     Progress::set (progress_state);
-    sleep(sl);
 
     if(PollAbort()) return false;
     Progress::NextStage ();
     AdjustSSHDService();
-    sleep(sl);
 
     Progress::NextStage ();
-    sleep(sl);
 
     return true;
 }

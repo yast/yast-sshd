@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jun 20 09:12:07 CEST 2011 - locilka@suse.cz
+
+- Removed all sleeps.
+
+-------------------------------------------------------------------
 Wed Jun 15 10:45:10 CEST 2011 - locilka@suse.cz
 
 - Added possibility to manage the sshd service (#556535).
