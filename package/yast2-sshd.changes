@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug  5 12:35:22 CEST 2011 - tgoettlicher@suse.de
+
+- fixed .desktop file (bnc #681249)
+
+-------------------------------------------------------------------
 Mon Jun 20 09:12:07 CEST 2011 - locilka@suse.cz
 
 - Removed all sleeps.
