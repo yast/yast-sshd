@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep 15 10:15:52 CEST 2011 - visnov@suse.de
+
+- remove unneeded import 
+
+-------------------------------------------------------------------
 Fri Aug  5 12:35:22 CEST 2011 - tgoettlicher@suse.de
 
 - fixed .desktop file (bnc #681249)

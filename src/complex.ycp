@@ -9,7 +9,6 @@
     import "Label";
     import "Popup";
     import "Wizard";
-    import "Wizard_hw";
     import "Sshd";
     import "Confirm";
     import "Report";
