@@ -16,11 +16,13 @@ map HELPS = $[
 
     /* Read dialog help */
     "read" : _("<p><b><big>Initializing the sshd Configuration</big></b><br>
-Please wait...<br></p>"),
+</p>
+"),
 
     /* Write dialog help */
     "write" : _("<p><b><big>Saving the sshd Configuration</big></b><br>
-Please wait...<br></p>"),
+</p>
+"),
 
     /* Server Configuration dialog help */
     "server_configuration" : _("<p><b><big>Server Configuration</big></b><br>
@@ -57,7 +59,8 @@ This option applies to protocol version 2 only.</p>"),
 
     /* Protocol and Cipher Settings dialog help*/
     "proto_settings" : _("<p><b><big>Protocol and Cipher Settings</big></b><br>
-Configure SSHD protocol version and cipher settings here.<br></p>"),
+Configure SSHD protocol version and cipher settings.<br></p>
+"),
 
 ];
 

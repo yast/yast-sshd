@@ -81,7 +81,7 @@ term LoginSettingsDialogContent () {
 	    _("General Login Settings"),
 	    `MarginBox (mbox_x, mbox_y, `VBox (
 		/* A check box */
-		`Left(`CheckBox(`id("PrintMotd"),            _("Print &Message of the Day After Login"))),
+		`Left(`CheckBox(`id("PrintMotd"),            _("Print &Message of the Day after Login"))),
 		/* A check box */
 		`Left(`CheckBox(`id("PermitRootLogin"),      _("Permi&t Root Login")))
 	    ))
