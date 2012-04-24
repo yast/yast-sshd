@@ -16,6 +16,7 @@ X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=sshd
 X-SuSE-YaST-AutoInstClonable=true
 X-SuSE-YaST-AutoInstRequires=lan
+X-SuSE-YaST-AutoInstSchema=sshd_config.rnc
 
 Icon=yast-sshd
 Exec=xdg-su -c "/sbin/yast2 sshd"
