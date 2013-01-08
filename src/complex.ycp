@@ -214,12 +214,13 @@ void AddEditPortDialog (string current_port) {
 	),
 	`VSpacing(1),
 	`ButtonBox(
-	    `PushButton(`id(`ok),     `opt(`okButton),     Label::OKButton()),
-	    `PushButton(`id(`cancel), `opt(`cancelButton), Label::CancelButton())
+	    `PushButton(`id(`ok),     `opt(`okButton, `default, `key_F10), Label::OKButton()),
+	    `PushButton(`id(`cancel), `opt(`cancelButton, `key_F9),        Label::CancelButton())
 	)
     ));
 
     UI::ChangeWidget( `id("port_number"), `ValidChars, "0123456789");
+    UI::SetFocus(`id("port_number"));
 
     any ret = nil;
     while (true) {
