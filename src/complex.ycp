@@ -214,8 +214,8 @@ void AddEditPortDialog (string current_port) {
 	),
 	`VSpacing(1),
 	`ButtonBox(
-	    `PushButton(`id(`ok),     `opt(`okButton, `default, `key_F10), Label::OKButton()),
-	    `PushButton(`id(`cancel), `opt(`cancelButton, `key_F9),        Label::CancelButton())
+	    `PushButton(`id(`ok), `opt(`default), Label::OKButton()),
+	    `PushButton(`id(`cancel), Label::CancelButton())
 	)
     ));
 
