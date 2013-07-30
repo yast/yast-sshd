@@ -9,6 +9,8 @@ BuildRequires:	perl-XML-Writer update-desktop-files yast2 yast2-devtools yast2-t
 
 BuildArchitectures:	noarch
 
+Requires:       yast2-ruby-bindings >= 1.0.0
+
 Summary:	YaST2 - SSH Server Configuration
 
 %description
@@ -26,10 +28,9 @@ This package contains the YaST2 component for SSH server configuration.
 %defattr(-,root,root)
 %dir @yncludedir@/sshd
 @yncludedir@/sshd/*
-@clientdir@/sshd.ycp
-@clientdir@/sshd_auto.ycp
-@moduledir@/*.ybc
-@moduledir@/*.ycp
+@clientdir@/sshd.rb
+@clientdir@/sshd_auto.rb
+@moduledir@/*.rb
 @desktopdir@/sshd.desktop
 @schemadir@/autoyast/rnc/sshd_config.rnc
 %doc @docdir@
