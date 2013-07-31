@@ -1,32 +1,27 @@
-# Makefile.am for sshd/src
+# Sources for sshd
+
+module_DATA = \
+  modules/SshdCommandLine.rb \
+  modules/Sshd.rb
+
+client_DATA = \
+  clients/sshd_auto.rb \
+  clients/sshd.rb
 
 yncludedir = @yncludedir@/sshd
+ynclude_DATA = \
+  include/sshd/wizards.rb \
+  include/sshd/dialogs.rb \
+  include/sshd/complex.rb \
+  include/sshd/helps.rb
 
-client_DATA =			\
-	sshd.ycp		\
-	sshd_auto.ycp
+schemafilesdir = $(schemadir)/autoyast/rnc
+schemafiles_DATA = \
+  autoyast-rnc/sshd_config.rnc
 
-ynclude_DATA =			\
-	helps.ycp		\
-	wizards.ycp		\
-	dialogs.ycp		\
-	complex.ycp
+desktop_DATA = \
+  desktop/sshd.desktop
 
-desktop_DATA =			\
-	sshd.desktop
-
-module_DATA =			\
-	Sshd.ycp		\
-	SshdCommandLine.ycp
-
-rncdir =  $(schemadir)/autoyast/rnc
-rnc_DATA = sshd_config.rnc
-
-# create a symlink for local build, #145327
-sshd:
-	ln -sf . $@
-ycpchook = sshd
-
-EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA) $(rnc_DATA)
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(schemafiles_DATA) $(desktop_DATA)
 
 include $(top_srcdir)/Makefile.am.common
