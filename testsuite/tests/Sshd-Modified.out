@@ -1,6 +1,0 @@
-Dump	Sshd::GetModified
-Return	false
-Dump	Sshd::SetModified
-Return	nil
-Dump	Sshd::GetModified
-Return	true
