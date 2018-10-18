@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 18 19:49:09 UTC 2018 - calebwoodbine.public@gmail.com
+
+- Updated support for firewalld
+- Version 3.2.0
+
+-------------------------------------------------------------------
 Thu Sep 19 17:21:00 UTC 2013 - lslezak@suse.cz
 
 - do not use *.spec.in template, use *.spec file with RPM macros
