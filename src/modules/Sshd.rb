@@ -29,6 +29,7 @@
 # Representation of the configuration of SSHD.
 # Input and output routines.
 require "yast"
+require "y2firewall/firewalld"
 
 module Yast
   class SshdClass < Module
@@ -42,7 +43,6 @@ module Yast
       Yast.import "Service"
       Yast.import "Popup"
       Yast.import "Mode"
-      Yast.import "SuSEFirewall"
 
       # Data was modified?
       @modified = false
@@ -74,6 +74,11 @@ module Yast
           "aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,arcfour128,arcfour256,arcfour,aes192-cbc,aes256-cbc,aes128-ctr,aes192-ctr,aes256-ctr"
         ]
       }
+    end
+
+    # firewall instance
+    def firewall
+      @firewall ||= Y2Firewall::Firewalld.instance
     end
 
     # Returns whether the configuration has been modified.
@@ -269,7 +274,7 @@ module Yast
       Progress.NextStep
       progress_state = Progress.set(false)
       # Error message
-      Report.Error(_("Cannot read firewall settings.")) if !SuSEFirewall.Read
+      Report.Error(_("Cannot read firewall settings.")) if !firewall.read
       Progress.set(progress_state)
 
       return false if PollAbort()
@@ -374,7 +379,7 @@ module Yast
       Progress.NextStage
       progress_state = Progress.set(false)
       # Error message
-      Report.Error(_("Cannot write firewall settings.")) if !SuSEFirewall.Write
+      Report.Error(_("Cannot write firewall settings.")) if !firewall.write_only
       Progress.set(progress_state)
 
       return false if PollAbort()

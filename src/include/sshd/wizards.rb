@@ -105,11 +105,11 @@ module Yast
           )
         },
         "fw"            => CWMFirewallInterfaces.CreateOpenFirewallWidget(
-          { "services" => ["service:sshd"], "display_details" => true }
+          { "services" => ["service:ssh"], "display_details" => true }
         ),
         "start_stop"    => CWMServiceStart.CreateStartStopWidget(
           {
-            "service_id"                => "sshd",
+            "service_id"                => "ssh",
             # label - service status, informative text
             "service_running_label"     => _(
               "SSH server is running"
