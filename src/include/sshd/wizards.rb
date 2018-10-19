@@ -109,7 +109,7 @@ module Yast
         ),
         "start_stop"    => CWMServiceStart.CreateStartStopWidget(
           {
-            "service_id"                => "ssh",
+            "service_id"                => "sshd",
             # label - service status, informative text
             "service_running_label"     => _(
               "SSH server is running"
