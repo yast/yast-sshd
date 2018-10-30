@@ -1,12 +1,10 @@
 Module Without Maintenance
 ==========================
 
-**This module is not developed anymore.**
+This module is not developed anymore by the YaST team at SUSE.
 
-GIT
----
+You may be interested in a revival fork
+by [BobyMCBobs](https://github.com/BobyMCbobs):
 
-If you want to see the last state check the [*master_old*](../master_old) branch.
-If you find it useful and plan to maintain it please contain yast team on its
-mailing list.
-
+- OBS: <https://build.opensuse.org/package/show/home:Boby_MC_bobs/yast2-sshd>
+- Git: <https://github.com/BobyMCbobs/yast-sshd>
